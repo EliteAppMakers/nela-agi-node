@@ -1,0 +1,66 @@
+{
+  "name": "nela-agi",
+  "version": "0.1.0",
+  "description": "The official TypeScript / JavaScript library for the Nela AGI API.",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "require": "./dist/index.js",
+      "import": "./dist/index.mjs",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "lint": "tsc",
+    "test": "dotenv -- jest",
+    "dev": "tsup --watch",
+    "build": "tsup",
+    "commit": "cz",
+    "release": "release-it",
+    "release:dry": "release-it --dry-run",
+    "release:no-npm": "release-it --no-npm"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/EliteAppMakers/nela-agi-node.git"
+  },
+  "keywords": [
+    "AI",
+    "AGI",
+    "Text Based AI Tasks",
+    "Image Based AI Tasks",
+    "Audio Based AI Tasks",
+    "Video Based AI Tasks",
+    "Nela AGI"
+  ],
+  "author": "EliteAppMakers | Elavazhakan",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/EliteAppMakers/nela-agi-node/issues"
+  },
+  "homepage": "https://github.com/EliteAppMakers/nela-agi-node#readme",
+  "devDependencies": {
+    "@release-it/conventional-changelog": "8.0.1",
+    "@types/jest": "29.5.12",
+    "@types/node": "20.12.7",
+    "commitizen": "4.3.0",
+    "cz-conventional-changelog": "3.3.0",
+    "dotenv-cli": "7.4.1",
+    "jest": "29.7.0",
+    "jest-environment-jsdom": "29.7.0",
+    "release-it": "17.2.0",
+    "ts-jest": "29.1.2",
+    "tsup": "8.0.2",
+    "typescript": "5.4.5"
+  },
+  "dependencies": {
+    "axios": "1.6.8"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  }
+}

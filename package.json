@@ -1,6 +1,6 @@
 {
   "name": "nela-agi",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "The official TypeScript / JavaScript library for the Nela AGI API.",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",

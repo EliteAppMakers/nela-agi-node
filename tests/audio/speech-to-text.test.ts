@@ -13,8 +13,8 @@ describe("SpeechToText", () => {
     speechToText = new SpeechToText(client);
   });
 
-  // Successfully fetch speech-Enhancement with only required audio as Blob
-  it("should successfully fetch speech-Enhancement with only required audio as Blob", async () => {
+  // Successfully fetch SpeechToText with only required audio as Blob
+  it("should successfully fetch SpeechToText with only required audio as Blob", async () => {
     // Arrange
     const audio = createBlobFromFilePath("./tests/assets/speech-to-text.mp3");
     const url =
@@ -46,8 +46,8 @@ describe("SpeechToText", () => {
     );
   }, 120000);
 
-  // Successfully fetch speech-Enhancement with only required audio as Buffer
-  it("should successfully fetch speech-Enhancement with only required audio as Buffer", async () => {
+  // Successfully fetch SpeechToText with only required audio as Buffer
+  it("should successfully fetch SpeechToText with only required audio as Buffer", async () => {
     // Arrange
     const audio = fs.readFileSync("./tests/assets/speech-to-text.wav");
     const audioContentType = getContentTypeFromBuffer(audio);
@@ -88,7 +88,7 @@ describe("SpeechToText", () => {
     // Arrange
     const audio = createBlobFromFilePath("./tests/assets/image-inpainting.jpg");
     const expectedErrorCode = 422;
-    const expectedErrorMessage = "Audio format should be MP3, MPEG or WAV";
+    const expectedErrorMessage = "audio format should be MP3, MPEG or WAV";
     let catchExecuted = false;
 
     // Act & Assert

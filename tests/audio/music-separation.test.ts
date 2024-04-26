@@ -87,7 +87,7 @@ describe("MusicSeparation", () => {
     const audio = createBlobFromFilePath("./tests/assets/image-inpainting.jpg");
     const split = "ALL";
     const expectedErrorCode = 422;
-    const expectedErrorMessage = "Audio format should be MP3, MPEG or WAV";
+    const expectedErrorMessage = "audio format should be MP3, MPEG or WAV";
     let catchExecuted = false;
 
     // Act & Assert
@@ -109,7 +109,7 @@ describe("MusicSeparation", () => {
     const audio = createBlobFromFilePath("./tests/assets/speech-to-text.mp3");
     const split = "GUITAR";
     const expectedErrorCode = 422;
-    const expectedErrorMessage = "Split format should be 'ALL' or 'KARAOKE'";
+    const expectedErrorMessage = "split format should be 'ALL' or 'KARAOKE'";
     let catchExecuted = false;
 
     // Act & Assert

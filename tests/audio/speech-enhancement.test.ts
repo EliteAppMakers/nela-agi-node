@@ -13,8 +13,8 @@ describe("SpeechEnhancement", () => {
     speechEnhancement = new SpeechEnhancement(client);
   });
 
-  // Successfully fetch speech-Enhancement with only required required audio as Blob
-  it("should successfully fetch speech-Enhancement with only required required audio as Blob", async () => {
+  // Successfully fetch SpeechEnhancement with only required required audio as Blob
+  it("should successfully fetch SpeechEnhancement with only required required audio as Blob", async () => {
     // Arrange
     const audio = createBlobFromFilePath(
       "./tests/assets/speech-enhancement.mp3"
@@ -48,8 +48,8 @@ describe("SpeechEnhancement", () => {
     );
   }, 120000);
 
-  // Successfully fetch speech-Enhancement with only required required audio as Buffer
-  it("should successfully fetch speech-Enhancement with only required required audio as Buffer", async () => {
+  // Successfully fetch SpeechEnhancement with only required required audio as Buffer
+  it("should successfully fetch SpeechEnhancement with only required required audio as Buffer", async () => {
     // Arrange
     const audio = fs.readFileSync("./tests/assets/speech-enhancement.wav");
     const audioContentType = getContentTypeFromBuffer(audio);
@@ -90,7 +90,7 @@ describe("SpeechEnhancement", () => {
     // Arrange
     const audio = createBlobFromFilePath("./tests/assets/image-inpainting.jpg");
     const expectedErrorCode = 422;
-    const expectedErrorMessage = "Audio format should be MP3, MPEG or WAV";
+    const expectedErrorMessage = "audio format should be MP3, MPEG or WAV";
     let catchExecuted = false;
 
     // Act & Assert

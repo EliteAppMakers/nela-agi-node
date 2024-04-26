@@ -167,7 +167,7 @@ describe("ImageToImage", () => {
     const image = createBlobFromFilePath("./tests/assets/speech-to-text.mp3");
     const prompt = "abc";
     const expectedErrorCode = 422;
-    const expectedErrorMessage = "Image format should be PNG or JPEG";
+    const expectedErrorMessage = "image format should be PNG or JPEG";
     let catchExecuted = false;
 
     // Act & Assert
@@ -190,7 +190,7 @@ describe("ImageToImage", () => {
     const prompt = "ab";
     const expectedErrorCode = 422;
     const expectedErrorMessage =
-      "Prompt length should be between 3 and 275 characters";
+      "prompt length should be between 3 and 275 characters";
     let catchExecuted = false;
 
     // Act & Assert
@@ -214,7 +214,7 @@ describe("ImageToImage", () => {
       "This is a prompt with more than 275 characters. This is a prompt with more than 275 characters. This is a prompt with more than 275 characters. This is a prompt with more than 275 characters. This is a prompt with more than 275 characters. This is a prompt with more than 275 characters.";
     const expectedErrorCode = 422;
     const expectedErrorMessage =
-      "Prompt length should be between 3 and 275 characters";
+      "prompt length should be between 3 and 275 characters";
     let catchExecuted = false;
 
     // Act & Assert
@@ -237,7 +237,7 @@ describe("ImageToImage", () => {
     const negativePrompt = "ab";
     const expectedErrorCode = 422;
     const expectedErrorMessage =
-      "Negative Prompt length should be between 3 and 275 characters";
+      "negativePrompt length should be between 3 and 275 characters";
     let catchExecuted = false;
 
     // Act & Assert
@@ -266,7 +266,7 @@ describe("ImageToImage", () => {
       "This is a negativePrompt with more than 275 characters. This is a negativePrompt with more than 275 characters. This is a negativePrompt with more than 275 characters. This is a negativePrompt with more than 275 characters. This is a negativePrompt with more than 275 characters.";
     const expectedErrorCode = 422;
     const expectedErrorMessage =
-      "Negative Prompt length should be between 3 and 275 characters";
+      "negativePrompt length should be between 3 and 275 characters";
     let catchExecuted = false;
 
     // Act & Assert
@@ -365,7 +365,7 @@ describe("ImageToImage", () => {
     const seeds = [-0.01, 9999999999.01];
     const expectedErrorCode = 422;
     const expectedErrorMessage =
-      "Seed should be between 0 and 9999999999 value";
+      "seed should be between 0 and 9999999999 value";
     let catchExecuted = false;
 
     // Act & Assert
@@ -441,7 +441,7 @@ describe("ImageToImage", () => {
     const numInferenceSteps = 40;
     const strengths = [-0.01, 1.01];
     const expectedErrorCode = 422;
-    const expectedErrorMessage = "Strength should be between 0.0 and 1.0";
+    const expectedErrorMessage = "strength should be between 0.0 and 1.0";
     let catchExecuted = false;
 
     // Act & Assert

@@ -79,7 +79,7 @@ describe("TextToSpeech", () => {
     const text = "a";
     const expectedErrorCode = 422;
     const expectedErrorMessage =
-      "Text length should be between 2 and 5000 characters";
+      "text length should be between 2 and 5000 characters";
     let catchExecuted = false;
 
     // Act & Assert
@@ -101,7 +101,7 @@ describe("TextToSpeech", () => {
     const text = "a";
     const expectedErrorCode = 422;
     const expectedErrorMessage =
-      "Text length should be between 2 and 5000 characters";
+      "text length should be between 2 and 5000 characters";
     let catchExecuted = false;
 
     // Act & Assert

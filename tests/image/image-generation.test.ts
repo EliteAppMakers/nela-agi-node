@@ -113,7 +113,7 @@ describe("ImageGeneration", () => {
     const prompt = "ab";
     const expectedErrorCode = 422;
     const expectedErrorMessage =
-      "Prompt length should be between 3 and 275 characters";
+      "prompt length should be between 3 and 275 characters";
     let catchExecuted = false;
 
     // Act & Assert
@@ -136,7 +136,7 @@ describe("ImageGeneration", () => {
       "This is a prompt with more than 275 characters. This is a prompt with more than 275 characters. This is a prompt with more than 275 characters. This is a prompt with more than 275 characters. This is a prompt with more than 275 characters. This is a prompt with more than 275 characters.";
     const expectedErrorCode = 422;
     const expectedErrorMessage =
-      "Prompt length should be between 3 and 275 characters";
+      "prompt length should be between 3 and 275 characters";
     let catchExecuted = false;
 
     // Act & Assert
@@ -159,7 +159,7 @@ describe("ImageGeneration", () => {
     const negativePrompt = "ab";
     const expectedErrorCode = 422;
     const expectedErrorMessage =
-      "Negative Prompt length should be between 3 and 275 characters";
+      "negativePrompt length should be between 3 and 275 characters";
     let catchExecuted = false;
 
     // Act & Assert
@@ -183,7 +183,7 @@ describe("ImageGeneration", () => {
       "This is a negativePrompt with more than 275 characters. This is a negativePrompt with more than 275 characters. This is a negativePrompt with more than 275 characters. This is a negativePrompt with more than 275 characters. This is a negativePrompt with more than 275 characters.";
     const expectedErrorCode = 422;
     const expectedErrorMessage =
-      "Negative Prompt length should be between 3 and 275 characters";
+      "negativePrompt length should be between 3 and 275 characters";
     let catchExecuted = false;
 
     // Act & Assert
@@ -206,7 +206,7 @@ describe("ImageGeneration", () => {
     const negativePrompt = "Avoid any buildings or man-made structures";
     const widths = [511.99, 1024.01];
     const expectedErrorCode = 422;
-    const expectedErrorMessage = "Width should be between 512 and 1024 pixels";
+    const expectedErrorMessage = "width should be between 512 and 1024 pixels";
     let catchExecuted = false;
 
     // Act & Assert
@@ -237,7 +237,7 @@ describe("ImageGeneration", () => {
     const width = 720;
     const heights = [511.99, 1024.01];
     const expectedErrorCode = 422;
-    const expectedErrorMessage = "Height should be between 512 and 1024 pixels";
+    const expectedErrorMessage = "height should be between 512 and 1024 pixels";
     let catchExecuted = false;
 
     // Act & Assert
@@ -345,7 +345,7 @@ describe("ImageGeneration", () => {
     const seeds = [-0.01, 9999999999.01];
     const expectedErrorCode = 422;
     const expectedErrorMessage =
-      "Seed should be between 0 and 9999999999 value";
+      "seed should be between 0 and 9999999999 value";
     let catchExecuted = false;
 
     // Act & Assert

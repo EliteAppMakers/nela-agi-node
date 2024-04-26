@@ -314,7 +314,8 @@ describe("ChatCompletion", () => {
     ];
     const maxNewTokens = 100;
     const expectedErrorCode = 422;
-    const expectedErrorMessage = "Allowed values are 128, 256, 512, or 1024";
+    const expectedErrorMessage =
+      "allowedMaxNewTokens values are 128, 256, 512, or 1024";
     let catchExecuted = false;
 
     // Act & Assert

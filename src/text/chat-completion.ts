@@ -126,7 +126,10 @@ export class ChatCompletion extends API {
 
       if (!this.allowedMaxNewTokens.includes(maxNewTokens)) {
         return reject(
-          new NelaAGIError(422, "Allowed values are 128, 256, 512, or 1024")
+          new NelaAGIError(
+            422,
+            "allowedMaxNewTokens values are 128, 256, 512, or 1024"
+          )
         );
       }
 

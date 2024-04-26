@@ -1,4 +1,5 @@
 import { AxiosResponse } from "axios";
+import { Buffer } from "buffer";
 import { API } from "../api";
 import { NelaAGIError } from "../error";
 import { getContentTypeFromBuffer } from "../utils";
@@ -68,69 +69,63 @@ export class ImageInpainting extends API {
     imageFormat: string = "JPEG"
   ): Promise<AxiosResponse> {
     return new Promise<AxiosResponse>(async (resolve, reject) => {
-      try {
-        if (
-          !(image instanceof File) &&
-          !(image instanceof Blob) &&
-          !(image instanceof Buffer)
-        ) {
+      if (typeof window !== "undefined") {
+        if (!(image instanceof File) && !(image instanceof Blob)) {
           return reject(
             new NelaAGIError(
               422,
-              "Image should be instance of File or Blob or Buffer"
+              "image should be instance of File or Blob since Buffer is undefined in browser environment"
             )
           );
         }
-        if (
-          !(maskImage instanceof File) &&
-          !(maskImage instanceof Blob) &&
-          !(maskImage instanceof Buffer)
-        ) {
+
+        if (!(maskImage instanceof File) && !(maskImage instanceof Blob)) {
           return reject(
             new NelaAGIError(
               422,
-              "Mask Image should be instance of File or Blob or Buffer"
+              "maskImage should be instance of File or Blob since Buffer is undefined in browser environment"
             )
           );
         }
-      } catch (error) {
+      } else {
         if (!(image instanceof Blob) && !(image instanceof Buffer)) {
           return reject(
             new NelaAGIError(
               422,
-              "Image should be instance of Blob or Buffer since File is undefined in node.js environment"
+              "image should be instance of Blob or Buffer since File is undefined in node.js environment"
             )
           );
         }
+
         if (!(maskImage instanceof Blob) && !(maskImage instanceof Buffer)) {
           return reject(
             new NelaAGIError(
               422,
-              "Mask Image should be instance of Blob or Buffer since File is undefined in node.js environment"
+              "maskImage should be instance of Blob or Buffer since File is undefined in node.js environment"
             )
           );
         }
-      }
 
-      if (Buffer.isBuffer(image)) {
-        let imageContentType = getContentTypeFromBuffer(image);
-        image = new Blob([image], { type: imageContentType });
-      }
+        if (image instanceof Buffer) {
+          let imageContentType = getContentTypeFromBuffer(image);
+          image = new Blob([image], { type: imageContentType });
+        }
 
-      if (Buffer.isBuffer(maskImage)) {
-        let maskImageContentType = getContentTypeFromBuffer(maskImage);
-        maskImage = new Blob([maskImage], { type: maskImageContentType });
+        if (maskImage instanceof Buffer) {
+          let maskImageContentType = getContentTypeFromBuffer(maskImage);
+          maskImage = new Blob([maskImage], { type: maskImageContentType });
+        }
       }
 
       if (!this.allowedImageFormats.includes(image.type)) {
         return reject(
-          new NelaAGIError(422, "Image format should be PNG or JPEG")
+          new NelaAGIError(422, "image format should be PNG or JPEG")
         );
       }
 
       if (!this.allowedImageFormats.includes(maskImage.type)) {
         return reject(
-          new NelaAGIError(422, "Mask image format should be PNG or JPEG")
+          new NelaAGIError(422, "maskImage format should be PNG or JPEG")
         );
       }
 
@@ -142,7 +137,7 @@ export class ImageInpainting extends API {
         return reject(
           new NelaAGIError(
             422,
-            "Prompt length should be between 3 and 275 characters"
+            "prompt length should be between 3 and 275 characters"
           )
         );
       }
@@ -156,20 +151,20 @@ export class ImageInpainting extends API {
         return reject(
           new NelaAGIError(
             422,
-            "Negative Prompt length should be between 3 and 275 characters"
+            "negativePrompt length should be between 3 and 275 characters"
           )
         );
       }
 
       if (typeof width !== "number" || width < 512 || width > 1024) {
         return reject(
-          new NelaAGIError(422, "Width should be between 512 and 1024 pixels")
+          new NelaAGIError(422, "width should be between 512 and 1024 pixels")
         );
       }
 
       if (typeof height !== "number" || height < 512 || height > 1024) {
         return reject(
-          new NelaAGIError(422, "Height should be between 512 and 1024 pixels")
+          new NelaAGIError(422, "height should be between 512 and 1024 pixels")
         );
       }
 
@@ -201,7 +196,7 @@ export class ImageInpainting extends API {
 
       if (typeof seed !== "number" || seed < 0 || seed > 9999999999) {
         return reject(
-          new NelaAGIError(422, "Seed should be between 0 and 9999999999 value")
+          new NelaAGIError(422, "seed should be between 0 and 9999999999 value")
         );
       }
 
@@ -220,7 +215,7 @@ export class ImageInpainting extends API {
 
       if (typeof strength !== "number" || strength < 0 || strength > 1) {
         return reject(
-          new NelaAGIError(422, "Strength should be between 0.0 and 1.0")
+          new NelaAGIError(422, "strength should be between 0.0 and 1.0")
         );
       }
 

@@ -1,4 +1,5 @@
 import { AxiosResponse } from "axios";
+import { Buffer } from "buffer";
 import { API } from "../api";
 import { NelaAGIError } from "../error";
 import { getContentTypeFromBuffer } from "../utils";
@@ -54,20 +55,16 @@ export class MusicSeparation extends API {
     split: string
   ): Promise<AxiosResponse> {
     return new Promise<AxiosResponse>(async (resolve, reject) => {
-      try {
-        if (
-          !(audio instanceof File) &&
-          !(audio instanceof Blob) &&
-          !(audio instanceof Buffer)
-        ) {
+      if (typeof window !== "undefined") {
+        if (!(audio instanceof File) && !(audio instanceof Blob)) {
           return reject(
             new NelaAGIError(
               422,
-              "audio should be instance of File or Blob or Buffer"
+              "audio should be instance of File or Blob since Buffer is undefined in browser environment"
             )
           );
         }
-      } catch (error) {
+      } else {
         if (!(audio instanceof Blob) && !(audio instanceof Buffer)) {
           return reject(
             new NelaAGIError(
@@ -76,22 +73,22 @@ export class MusicSeparation extends API {
             )
           );
         }
-      }
 
-      if (Buffer.isBuffer(audio)) {
-        let audioContentType = getContentTypeFromBuffer(audio);
-        audio = new Blob([audio], { type: audioContentType });
+        if (audio instanceof Buffer) {
+          let audioContentType = getContentTypeFromBuffer(audio);
+          audio = new Blob([audio], { type: audioContentType });
+        }
       }
 
       if (!this.allowedAudioFormats.includes(audio.type)) {
         return reject(
-          new NelaAGIError(422, "Audio format should be MP3, MPEG or WAV")
+          new NelaAGIError(422, "audio format should be MP3, MPEG or WAV")
         );
       }
 
       if (!this.allowedSplitModes.includes(split.toUpperCase())) {
         return reject(
-          new NelaAGIError(422, "Split format should be 'ALL' or 'KARAOKE'")
+          new NelaAGIError(422, "split format should be 'ALL' or 'KARAOKE'")
         );
       }
 

@@ -1,4 +1,4 @@
-import fs from "fs";
+import { Buffer } from "buffer";
 
 /**
  * Read an environment variable.
@@ -113,6 +113,7 @@ export const getContentTypeFromExtension = (extension: string): string => {
  * @returns {Blob} - A Blob object representing the file content with the determined content type.
  */
 export const createBlobFromFilePath = (filePath: string): Blob => {
+  const fs = require("fs");
   const fileBuffer = fs.readFileSync(filePath);
   let fileContentType = getContentTypeFromBuffer(fileBuffer);
   const fileExtension = filePath.split(".");

@@ -63,7 +63,7 @@ export class ImageGeneration extends API {
         return reject(
           new NelaAGIError(
             422,
-            "Prompt length should be between 3 and 275 characters"
+            "prompt length should be between 3 and 275 characters"
           )
         );
       }
@@ -77,20 +77,20 @@ export class ImageGeneration extends API {
         return reject(
           new NelaAGIError(
             422,
-            "Negative Prompt length should be between 3 and 275 characters"
+            "negativePrompt length should be between 3 and 275 characters"
           )
         );
       }
 
       if (typeof width !== "number" || width < 512 || width > 1024) {
         return reject(
-          new NelaAGIError(422, "Width should be between 512 and 1024 pixels")
+          new NelaAGIError(422, "width should be between 512 and 1024 pixels")
         );
       }
 
       if (typeof height !== "number" || height < 512 || height > 1024) {
         return reject(
-          new NelaAGIError(422, "Height should be between 512 and 1024 pixels")
+          new NelaAGIError(422, "height should be between 512 and 1024 pixels")
         );
       }
 
@@ -122,7 +122,7 @@ export class ImageGeneration extends API {
 
       if (typeof seed !== "number" || seed < 0 || seed > 9999999999) {
         return reject(
-          new NelaAGIError(422, "Seed should be between 0 and 9999999999 value")
+          new NelaAGIError(422, "seed should be between 0 and 9999999999 value")
         );
       }
 

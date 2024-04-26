@@ -45,7 +45,7 @@ export class TextToSpeech extends API {
         return reject(
           new NelaAGIError(
             422,
-            "Text length should be between 2 and 5000 characters"
+            "text length should be between 2 and 5000 characters"
           )
         );
       }

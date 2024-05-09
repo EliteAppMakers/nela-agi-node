@@ -1,8 +1,7 @@
 import { AxiosResponse } from "axios";
-import { Buffer } from "buffer";
 import { API } from "../api";
 import { NelaAGIError } from "../error";
-import { getContentTypeFromBuffer } from "../utils";
+import { convertUrlToBlob, getContentTypeFromArrayBuffer } from "../utils";
 
 /**
  * Represents a class for fetching Speech Enhancement from the Nela AGI API.
@@ -42,31 +41,55 @@ export class SpeechEnhancement extends API {
    * ```
    * @throws {NelaAGIError} If there are any validation errors with the input parameters.
    */
-  async fetch(audio: File | Blob | Buffer): Promise<AxiosResponse> {
+  async fetch(
+    audio: string | File | Blob | ArrayBuffer
+  ): Promise<AxiosResponse> {
     return new Promise<AxiosResponse>(async (resolve, reject) => {
       if (typeof window !== "undefined") {
-        if (!(audio instanceof File) && !(audio instanceof Blob)) {
+        if (
+          !(typeof audio === "string") &&
+          !(audio instanceof File) &&
+          !(audio instanceof Blob) &&
+          !(audio instanceof ArrayBuffer)
+        ) {
           return reject(
             new NelaAGIError(
               422,
-              "audio should be instance of File or Blob since Buffer is undefined in browser environment"
+              "audio should be url string or an instance of File or Blob or ArrayBuffer"
             )
           );
         }
       } else {
-        if (!(audio instanceof Blob) && !(audio instanceof Buffer)) {
+        if (
+          !(typeof audio === "string") &&
+          !(audio instanceof Blob) &&
+          !(audio instanceof ArrayBuffer)
+        ) {
           return reject(
             new NelaAGIError(
               422,
-              "audio should be instance of Blob or Buffer since File is undefined in node.js environment"
+              "audio should be url string or an instance of Blob or ArrayBuffer since File is undefined in node.js environment"
             )
           );
         }
+      }
 
-        if (audio instanceof Buffer) {
-          let audioContentType = getContentTypeFromBuffer(audio);
-          audio = new Blob([audio], { type: audioContentType });
+      if (typeof audio === "string") {
+        try {
+          audio = await convertUrlToBlob(audio);
+        } catch (error) {
+          return reject(
+            new NelaAGIError(
+              422,
+              `audio should be a valid url string failed due to ${error}`
+            )
+          );
         }
+      }
+
+      if (audio instanceof ArrayBuffer) {
+        let audioContentType = getContentTypeFromArrayBuffer(audio);
+        audio = new Blob([audio], { type: audioContentType });
       }
 
       if (!this.allowedAudioFormats.includes(audio.type)) {

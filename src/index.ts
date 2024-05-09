@@ -4,10 +4,12 @@ import { NelaAGIError } from "./error";
 import { Image } from "./image";
 import { Text } from "./text";
 import {
-  createBlobFromFilePath,
-  getContentTypeFromBuffer,
+  convertUrlToBlob,
+  getContentTypeFromArrayBuffer,
   getContentTypeFromExtension,
   readEnv,
+  readLocalFileAsArrayBuffer,
+  readLocalFileAsBlob,
 } from "./utils";
 
 /**
@@ -244,8 +246,10 @@ class NelaAGI {
 export {
   NelaAGI,
   NelaAGIError,
-  createBlobFromFilePath,
-  getContentTypeFromBuffer,
+  convertUrlToBlob,
+  getContentTypeFromArrayBuffer,
   getContentTypeFromExtension,
   readEnv,
+  readLocalFileAsArrayBuffer,
+  readLocalFileAsBlob,
 };

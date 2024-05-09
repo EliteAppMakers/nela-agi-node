@@ -1,8 +1,7 @@
 import { AxiosResponse } from "axios";
-import { Buffer } from "buffer";
 import { API } from "../api";
 import { NelaAGIError } from "../error";
-import { getContentTypeFromBuffer } from "../utils";
+import { convertUrlToBlob, getContentTypeFromArrayBuffer } from "../utils";
 
 /**
  * Represents a class for performing image to image using the NelaAGI API.
@@ -51,7 +50,7 @@ export class ImageToImage extends API {
    * @throws {NelaAGIError} If there are any validation errors with the input parameters.
    */
   async fetch(
-    image: File | Blob | Buffer,
+    image: string | File | Blob | ArrayBuffer,
     prompt: string,
     negativePrompt?: string,
     cropsCoordsTopLeftX: number = 0,
@@ -64,28 +63,50 @@ export class ImageToImage extends API {
   ): Promise<AxiosResponse> {
     return new Promise<AxiosResponse>(async (resolve, reject) => {
       if (typeof window !== "undefined") {
-        if (!(image instanceof File) && !(image instanceof Blob)) {
+        if (
+          !(typeof image === "string") &&
+          !(image instanceof File) &&
+          !(image instanceof Blob) &&
+          !(image instanceof ArrayBuffer)
+        ) {
           return reject(
             new NelaAGIError(
               422,
-              "image should be instance of File or Blob since Buffer is undefined in browser environment"
+              "image should be url string or an instance of File or Blob or ArrayBuffer"
             )
           );
         }
       } else {
-        if (!(image instanceof Blob) && !(image instanceof Buffer)) {
+        if (
+          !(typeof image === "string") &&
+          !(image instanceof Blob) &&
+          !(image instanceof ArrayBuffer)
+        ) {
           return reject(
             new NelaAGIError(
               422,
-              "image should be instance of Blob or Buffer since File is undefined in node.js environment"
+              "image should be url string or an instance of Blob or ArrayBuffer since File is undefined in node.js environment"
             )
           );
         }
+      }
 
-        if (image instanceof Buffer) {
-          let imageContentType = getContentTypeFromBuffer(image);
-          image = new Blob([image], { type: imageContentType });
+      if (typeof image === "string") {
+        try {
+          image = await convertUrlToBlob(image);
+        } catch (error) {
+          return reject(
+            new NelaAGIError(
+              422,
+              `image should be a valid url string failed due to ${error}`
+            )
+          );
         }
+      }
+
+      if (image instanceof ArrayBuffer) {
+        let imageContentType = getContentTypeFromArrayBuffer(image);
+        image = new Blob([image], { type: imageContentType });
       }
 
       if (!this.allowedImageFormats.includes(image.type)) {

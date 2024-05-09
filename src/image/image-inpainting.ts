@@ -1,8 +1,7 @@
 import { AxiosResponse } from "axios";
-import { Buffer } from "buffer";
 import { API } from "../api";
 import { NelaAGIError } from "../error";
-import { getContentTypeFromBuffer } from "../utils";
+import { convertUrlToBlob, getContentTypeFromArrayBuffer } from "../utils";
 
 /**
  * Represents a class for performing image inpainting using the NelaAGI API.
@@ -54,8 +53,8 @@ export class ImageInpainting extends API {
    * @throws {NelaAGIError} If there are any validation errors with the input parameters.
    */
   async fetch(
-    image: File | Blob | Buffer,
-    maskImage: File | Blob | Buffer,
+    image: string | File | Blob | ArrayBuffer,
+    maskImage: string | File | Blob | ArrayBuffer,
     prompt: string,
     negativePrompt?: string,
     width: number = 1024,
@@ -70,51 +69,95 @@ export class ImageInpainting extends API {
   ): Promise<AxiosResponse> {
     return new Promise<AxiosResponse>(async (resolve, reject) => {
       if (typeof window !== "undefined") {
-        if (!(image instanceof File) && !(image instanceof Blob)) {
+        if (
+          !(typeof image === "string") &&
+          !(image instanceof File) &&
+          !(image instanceof Blob) &&
+          !(image instanceof ArrayBuffer)
+        ) {
           return reject(
             new NelaAGIError(
               422,
-              "image should be instance of File or Blob since Buffer is undefined in browser environment"
+              "image should be url string or an instance of File or Blob or ArrayBuffer"
             )
           );
         }
 
-        if (!(maskImage instanceof File) && !(maskImage instanceof Blob)) {
+        if (
+          !(typeof maskImage === "string") &&
+          !(maskImage instanceof File) &&
+          !(maskImage instanceof Blob) &&
+          !(maskImage instanceof ArrayBuffer)
+        ) {
           return reject(
             new NelaAGIError(
               422,
-              "maskImage should be instance of File or Blob since Buffer is undefined in browser environment"
+              "maskImage should be url string or an instance of File or Blob or ArrayBuffer"
             )
           );
         }
       } else {
-        if (!(image instanceof Blob) && !(image instanceof Buffer)) {
+        if (
+          !(typeof image === "string") &&
+          !(image instanceof Blob) &&
+          !(image instanceof ArrayBuffer)
+        ) {
           return reject(
             new NelaAGIError(
               422,
-              "image should be instance of Blob or Buffer since File is undefined in node.js environment"
+              "image should be url string or an instance of Blob or ArrayBuffer since File is undefined in node.js environment"
             )
           );
         }
 
-        if (!(maskImage instanceof Blob) && !(maskImage instanceof Buffer)) {
+        if (
+          !(typeof maskImage === "string") &&
+          !(maskImage instanceof Blob) &&
+          !(maskImage instanceof ArrayBuffer)
+        ) {
           return reject(
             new NelaAGIError(
               422,
-              "maskImage should be instance of Blob or Buffer since File is undefined in node.js environment"
+              "maskImage should be url string or an instance of Blob or ArrayBuffer since File is undefined in node.js environment"
             )
           );
         }
+      }
 
-        if (image instanceof Buffer) {
-          let imageContentType = getContentTypeFromBuffer(image);
-          image = new Blob([image], { type: imageContentType });
+      if (typeof image === "string") {
+        try {
+          image = await convertUrlToBlob(image);
+        } catch (error) {
+          return reject(
+            new NelaAGIError(
+              422,
+              `image should be a valid url string failed due to ${error}`
+            )
+          );
         }
+      }
 
-        if (maskImage instanceof Buffer) {
-          let maskImageContentType = getContentTypeFromBuffer(maskImage);
-          maskImage = new Blob([maskImage], { type: maskImageContentType });
+      if (typeof maskImage === "string") {
+        try {
+          maskImage = await convertUrlToBlob(maskImage);
+        } catch (error) {
+          return reject(
+            new NelaAGIError(
+              422,
+              `maskImage should be a valid url string failed due to ${error}`
+            )
+          );
         }
+      }
+
+      if (image instanceof ArrayBuffer) {
+        let imageContentType = getContentTypeFromArrayBuffer(image);
+        image = new Blob([image], { type: imageContentType });
+      }
+
+      if (maskImage instanceof ArrayBuffer) {
+        let maskImageContentType = getContentTypeFromArrayBuffer(maskImage);
+        maskImage = new Blob([maskImage], { type: maskImageContentType });
       }
 
       if (!this.allowedImageFormats.includes(image.type)) {

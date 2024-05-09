@@ -1,5 +1,12 @@
 # Nela AGI Node Changelog
 
+## [0.2.2](https://github.com/EliteAppMakers/nela-agi-node/compare/v0.2.1...v0.2.2) (2024-05-09)
+
+
+### Features
+
+* updated all file input to handle various data types string | File | Blob | ArrayBuffer ([93f1cbe](https://github.com/EliteAppMakers/nela-agi-node/commit/93f1cbe0612ae3d9b9cb26d9e7eba699cfa1d9e6))
+
 ## [0.2.1](https://github.com/EliteAppMakers/nela-agi-node/compare/v0.2.0...v0.2.1) (2024-04-26)
 
 ### Bug Fixes

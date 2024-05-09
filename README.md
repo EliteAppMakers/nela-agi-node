@@ -223,14 +223,14 @@ The fetch method returns a promise that resolves to the chat completion response
 | data.latency             | number                                          | Indicates the latency (response time in milliseconds) of the AI model.                                    |
 | status                   | number                                          | The HTTP status code of the response.                                                                     |
 | statusText               | string                                          | The status message of the response.                                                                       |
-| headers                  | RawAxiosResponseHeaders \| AxiosResponseHeaders | The headers of the response.                                                                              |
+| headers                  | RawAxiosResponseHeaders or AxiosResponseHeaders | The headers of the response.                                                                              |
 | config                   | InternalAxiosRequestConfig                      | The Axios request configuration.                                                                          |
 | request (optional)       | object                                          | The original request object.                                                                              |
 
 ### Example Usage
 
 ```javascript
-import { NelaAGI } from "../nela-agi";
+import { NelaAGI } from "nela-agi";
 
 const nelaAGI = new NelaAGI("account_id", "auth_key");
 
@@ -307,14 +307,14 @@ The fetch method returns a promise that resolves to the image generation respons
 | data.model_time_taken | number                                          | Indicates the time (in seconds) taken by the model to generate the output.                                 |
 | status                | number                                          | The HTTP status code of the response.                                                                      |
 | statusText            | string                                          | The status message of the response.                                                                        |
-| headers               | RawAxiosResponseHeaders \| AxiosResponseHeaders | The headers of the response.                                                                               |
+| headers               | RawAxiosResponseHeaders or AxiosResponseHeaders | The headers of the response.                                                                               |
 | config                | InternalAxiosRequestConfig                      | The Axios request configuration.                                                                           |
 | request (optional)    | object                                          | The original request object.                                                                               |
 
 ### Example Usage
 
 ```javascript
-import { NelaAGI } from "../nela-agi";
+import { NelaAGI } from "nela-agi";
 
 const nelaAGI = new NelaAGI("account_id", "auth_key");
 
@@ -362,18 +362,18 @@ The `imageToImage: ImageToImage`: is a property of the `image: Image` class and 
 
 ### Input Parameters
 
-| Parameter Name          | Data Type     | Default Value | Constraints                                                      | Description                                                                                                                                       |
-| ----------------------- | ------------- | ------------- | ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| image                   | File          | Nil           | image_content_type should be in PNG and JPEG image formats       | Specifies the input image file for transformation. Must be in PNG or JPEG format.                                                                 |
-| prompt                  | str           | Nil           | Prompt length should be between 3 and 275 characters             | Provides instructions or guidance to the AI model for image transformation.                                                                       |
-| negative_prompt         | Optional[str] | Nil           | Negative Prompt length should be between 3 and 275 characters    | Provides constraints or guidance away from undesired outcomes for the AI model.                                                                   |
-| crops_coords_top_left_x | int           | 0             | crops_coords_top_left_x value must be between 0 and 1024 px      | Sets the x-coordinate of the top-left corner of the crop area within the generated image.                                                         |
-| crops_coords_top_left_y | int           | 0             | crops_coords_top_left_y value must be between 0 and 1024 px      | Sets the y-coordinate of the top-left corner of the crop area within the generated image.                                                         |
-| seed                    | int           | 0             | Seed should be between 0 and 9999999999 value                    | Initializes the random number generator for reproducibility of results.                                                                           |
-| num_inference_steps     | int           | 25            | num_inference_steps should be between 1 and 75 value             | Specifies the number of iterations the AI model should perform during transformation. Increasing enhances detail but may prolong processing time. |
-| strength                | float         | 0.5           | strength should be between 0.0 and 1.0 value                     | Controls the intensity of transformation applied to the input image. Higher values result in more significant changes.                            |
-| guidance_scale          | float         | 5.0           | guidance_scale should be between 0 and 15 value                  | Scales the importance of prompt and negative prompt in the transformation process. Higher values emphasize guidance more strongly.                |
-| image_format            | str           | JPEG          | image_format should be in **“PNG”** and **“JPEG”** image formats | Specifies the desired format of the generated image. Must be PNG or JPEG.                                                                         |
+| Parameter Name          | Data Type                             | Default Value | Constraints                                                      | Description                                                                                                                                       |
+| ----------------------- | ------------------------------------- | ------------- | ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| image                   | string or File or Blob or ArrayBuffer | Nil           | image_content_type should be in PNG and JPEG image formats       | Specifies the input image file for transformation. Must be in PNG or JPEG format.                                                                 |
+| prompt                  | str                                   | Nil           | Prompt length should be between 3 and 275 characters             | Provides instructions or guidance to the AI model for image transformation.                                                                       |
+| negative_prompt         | Optional[str]                         | Nil           | Negative Prompt length should be between 3 and 275 characters    | Provides constraints or guidance away from undesired outcomes for the AI model.                                                                   |
+| crops_coords_top_left_x | int                                   | 0             | crops_coords_top_left_x value must be between 0 and 1024 px      | Sets the x-coordinate of the top-left corner of the crop area within the generated image.                                                         |
+| crops_coords_top_left_y | int                                   | 0             | crops_coords_top_left_y value must be between 0 and 1024 px      | Sets the y-coordinate of the top-left corner of the crop area within the generated image.                                                         |
+| seed                    | int                                   | 0             | Seed should be between 0 and 9999999999 value                    | Initializes the random number generator for reproducibility of results.                                                                           |
+| num_inference_steps     | int                                   | 25            | num_inference_steps should be between 1 and 75 value             | Specifies the number of iterations the AI model should perform during transformation. Increasing enhances detail but may prolong processing time. |
+| strength                | float                                 | 0.5           | strength should be between 0.0 and 1.0 value                     | Controls the intensity of transformation applied to the input image. Higher values result in more significant changes.                            |
+| guidance_scale          | float                                 | 5.0           | guidance_scale should be between 0 and 15 value                  | Scales the importance of prompt and negative prompt in the transformation process. Higher values emphasize guidance more strongly.                |
+| image_format            | str                                   | JPEG          | image_format should be in **“PNG”** and **“JPEG”** image formats | Specifies the desired format of the generated image. Must be PNG or JPEG.                                                                         |
 
 ### Outputs Parameters
 
@@ -388,14 +388,14 @@ The fetch method returns a promise that resolves to the image-to-image response 
 | data.model_time_taken | number                                          | Indicates the time (in seconds) taken by the model to generate the output.                                 |
 | status                | number                                          | The HTTP status code of the response.                                                                      |
 | statusText            | string                                          | The status message of the response.                                                                        |
-| headers               | RawAxiosResponseHeaders \| AxiosResponseHeaders | The headers of the response.                                                                               |
+| headers               | RawAxiosResponseHeaders or AxiosResponseHeaders | The headers of the response.                                                                               |
 | config                | InternalAxiosRequestConfig                      | The Axios request configuration.                                                                           |
 | request (optional)    | object                                          | The original request object.                                                                               |
 
 ### Example Usage
 
 ```javascript
-import { NelaAGI } from "../nela-agi";
+import { NelaAGI } from "nela-agi";
 
 const nelaAGI = new NelaAGI("account_id", "auth_key");
 
@@ -443,41 +443,41 @@ The `imageInpainting: ImageInpainting`: is a property of the `image: Image` clas
 
 ### Input Parameters
 
-| Parameter Name          | Data Type     | Default Value | Constraints                                                      | Description                                                                                                                                                                                                                                                                                                                                                                    |
-| ----------------------- | ------------- | ------------- | ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| image                   | File          | Nil           | image_content_type should be in PNG and JPEG image formats       | Specifies the input image file for the inpainting process.                                                                                                                                                                                                                                                                                                                     |
-| mask_image              | File          | Nil           | mask_image_content_type should be in PNG and JPEG image formats  | Specifies the mask image indicating areas to be inpainted. Typically, this mask image is a binary image where the areas to be in-painted are marked as white (255) and the rest as black (0). The algorithm utilizes this mask to guide the inpainting process, ensuring that only the specified areas are affected by the restoration while preserving the rest of the image. |
-| prompt                  | str           | Nil           | Prompt length should be between 3 and 275 characters.            | Provides textual guidance or instructions for the AI model to transform the image.                                                                                                                                                                                                                                                                                             |
-| negative_prompt         | Optional[str] | Nil           | Negative Prompt length should be between 3 and 275 characters.   | Optional constraint to guide the AI away from undesired outcomes.                                                                                                                                                                                                                                                                                                              |
-| width                   | int           | 1024          | Width should be between 512 and 1024 px.                         | Specifies the desired width of the output image.                                                                                                                                                                                                                                                                                                                               |
-| height                  | int           | 1024          | Height should be between 512 and 1024 px.                        | Specifies the desired height of the output image.                                                                                                                                                                                                                                                                                                                              |
-| crops_coords_top_left_x | int           | 0             | crops_coords_top_left_x value must be between 0 and 1024 px.     | Specifies the x-coordinate of the top-left corner of the crop area within the generated image.                                                                                                                                                                                                                                                                                 |
-| crops_coords_top_left_y | int           | 0             | crops_coords_top_left_y value must be between 0 and 1024 px.     | Specifies the y-coordinate of the top-left corner of the crop area within the generated image.                                                                                                                                                                                                                                                                                 |
-| seed                    | int           | 0             | Seed should be between 0 and 9999999999 value.                   | Initializes the random number generator for result reproducibility.                                                                                                                                                                                                                                                                                                            |
-| num_inference_steps     | int           | 25            | num_inference_steps should be between 1 and 75 value.            | Controls the number of iterations during the image inpainting process.                                                                                                                                                                                                                                                                                                         |
-| strength                | float         | 0.5           | strength should be between 0.0 and 1.0 value.                    | Influences the intensity of transformation applied to the image.                                                                                                                                                                                                                                                                                                               |
-| guidance_scale          | float         | 5.0           | guidance_scale should be between 0 and 15 value.                 | Scales the influence of prompt and negative prompt on the inpainting process.                                                                                                                                                                                                                                                                                                  |
-| image_format            | str           | JPEG          | image_format should be in **“PNG”** and **“JPEG”** image formats | Specifies the format of the generated image.                                                                                                                                                                                                                                                                                                                                   |
+| Parameter Name          | Data Type                             | Default Value | Constraints                                                      | Description                                                                                                                                                                                                                                                                                                                                                                    |
+| ----------------------- | ------------------------------------- | ------------- | ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| image                   | string or File or Blob or ArrayBuffer | Nil           | image_content_type should be in PNG and JPEG image formats       | Specifies the input image file for the inpainting process.                                                                                                                                                                                                                                                                                                                     |
+| mask_image              | string or File or Blob or ArrayBuffer | Nil           | mask_image_content_type should be in PNG and JPEG image formats  | Specifies the mask image indicating areas to be inpainted. Typically, this mask image is a binary image where the areas to be in-painted are marked as white (255) and the rest as black (0). The algorithm utilizes this mask to guide the inpainting process, ensuring that only the specified areas are affected by the restoration while preserving the rest of the image. |
+| prompt                  | str                                   | Nil           | Prompt length should be between 3 and 275 characters.            | Provides textual guidance or instructions for the AI model to transform the image.                                                                                                                                                                                                                                                                                             |
+| negative_prompt         | Optional[str]                         | Nil           | Negative Prompt length should be between 3 and 275 characters.   | Optional constraint to guide the AI away from undesired outcomes.                                                                                                                                                                                                                                                                                                              |
+| width                   | int                                   | 1024          | Width should be between 512 and 1024 px.                         | Specifies the desired width of the output image.                                                                                                                                                                                                                                                                                                                               |
+| height                  | int                                   | 1024          | Height should be between 512 and 1024 px.                        | Specifies the desired height of the output image.                                                                                                                                                                                                                                                                                                                              |
+| crops_coords_top_left_x | int                                   | 0             | crops_coords_top_left_x value must be between 0 and 1024 px.     | Specifies the x-coordinate of the top-left corner of the crop area within the generated image.                                                                                                                                                                                                                                                                                 |
+| crops_coords_top_left_y | int                                   | 0             | crops_coords_top_left_y value must be between 0 and 1024 px.     | Specifies the y-coordinate of the top-left corner of the crop area within the generated image.                                                                                                                                                                                                                                                                                 |
+| seed                    | int                                   | 0             | Seed should be between 0 and 9999999999 value.                   | Initializes the random number generator for result reproducibility.                                                                                                                                                                                                                                                                                                            |
+| num_inference_steps     | int                                   | 25            | num_inference_steps should be between 1 and 75 value.            | Controls the number of iterations during the image inpainting process.                                                                                                                                                                                                                                                                                                         |
+| strength                | float                                 | 0.5           | strength should be between 0.0 and 1.0 value.                    | Influences the intensity of transformation applied to the image.                                                                                                                                                                                                                                                                                                               |
+| guidance_scale          | float                                 | 5.0           | guidance_scale should be between 0 and 15 value.                 | Scales the influence of prompt and negative prompt on the inpainting process.                                                                                                                                                                                                                                                                                                  |
+| image_format            | str                                   | JPEG          | image_format should be in **“PNG”** and **“JPEG”** image formats | Specifies the format of the generated image.                                                                                                                                                                                                                                                                                                                                   |
 
 ### Outputs Parameters
 
-| Parameter Name        | Data Type                                     | Description                                                                                                |
-| --------------------- | --------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| data                  | object                                        | Contains the output image, model time taken.                                                               |
-| data.output           | object                                        | Contains the generated content. It is a list containing a dictionary with **"type"** and **"data"** keys.  |
-| data.output.type      | string                                        | Specifies the type of the generated content. This API will always generate **"image_base64"** type output. |
-| data.output.data      | string                                        | Contains the actual generated image_base64 content.                                                        |
-| data.model_time_taken | number                                        | Indicates the time (in seconds) taken by the model to generate the output.                                 |
-| status                | number                                        | The HTTP status code of the response.                                                                      |
-| statusText            | string                                        | The status message of the response.                                                                        |
-| headers               | RawAxiosResponseHeaders\|AxiosResponseHeaders | The headers of the response.                                                                               |
-| config                | InternalAxiosRequestConfig                    | The Axios request configuration.                                                                           |
-| request (optional)    | object                                        | The original request object.                                                                               |
+| Parameter Name        | Data Type                                       | Description                                                                                                |
+| --------------------- | ----------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| data                  | object                                          | Contains the output image, model time taken.                                                               |
+| data.output           | object                                          | Contains the generated content. It is a list containing a dictionary with **"type"** and **"data"** keys.  |
+| data.output.type      | string                                          | Specifies the type of the generated content. This API will always generate **"image_base64"** type output. |
+| data.output.data      | string                                          | Contains the actual generated image_base64 content.                                                        |
+| data.model_time_taken | number                                          | Indicates the time (in seconds) taken by the model to generate the output.                                 |
+| status                | number                                          | The HTTP status code of the response.                                                                      |
+| statusText            | string                                          | The status message of the response.                                                                        |
+| headers               | RawAxiosResponseHeaders or AxiosResponseHeaders | The headers of the response.                                                                               |
+| config                | InternalAxiosRequestConfig                      | The Axios request configuration.                                                                           |
+| request (optional)    | object                                          | The original request object.                                                                               |
 
 ### Example Usage
 
 ```javascript
-import { NelaAGI } from "../nela-agi";
+import { NelaAGI } from "nela-agi";
 
 const nelaAGI = new NelaAGI("account_id", "auth_key");
 
@@ -551,23 +551,23 @@ The `textToSpeech: TextToSpeech` is a property of the `audio: Audio` class and i
 
 The fetch method returns a promise that resolves to the text-to-speech response from the API. The response is an AxiosResponse object with the following structure
 
-| Parameter Name        | Data Type                                     | Description                                                                                                |
-| --------------------- | --------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| data                  | object                                        | Contains the output audio, model time taken.                                                               |
-| data.output           | object                                        | Contains the generated content. It is a list containing a dictionary with **"type"** and **"data"** keys.  |
-| data.output.type      | string                                        | Specifies the type of the generated content. This API will always generate **"audio_base64"** type output. |
-| data.output.data      | string                                        | Contains the actual generated audio_base64 content.                                                        |
-| data.model_time_taken | number                                        | Indicates the time (in seconds) taken by the model to generate the output.                                 |
-| status                | number                                        | The HTTP status code of the response.                                                                      |
-| statusText            | string                                        | The status message of the response.                                                                        |
-| headers               | RawAxiosResponseHeaders\|AxiosResponseHeaders | The headers of the response.                                                                               |
-| config                | InternalAxiosRequestConfig                    | The Axios request configuration.                                                                           |
-| request (optional)    | object                                        | The original request object.                                                                               |
+| Parameter Name        | Data Type                                       | Description                                                                                                |
+| --------------------- | ----------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| data                  | object                                          | Contains the output audio, model time taken.                                                               |
+| data.output           | object                                          | Contains the generated content. It is a list containing a dictionary with **"type"** and **"data"** keys.  |
+| data.output.type      | string                                          | Specifies the type of the generated content. This API will always generate **"audio_base64"** type output. |
+| data.output.data      | string                                          | Contains the actual generated audio_base64 content.                                                        |
+| data.model_time_taken | number                                          | Indicates the time (in seconds) taken by the model to generate the output.                                 |
+| status                | number                                          | The HTTP status code of the response.                                                                      |
+| statusText            | string                                          | The status message of the response.                                                                        |
+| headers               | RawAxiosResponseHeaders or AxiosResponseHeaders | The headers of the response.                                                                               |
+| config                | InternalAxiosRequestConfig                      | The Axios request configuration.                                                                           |
+| request (optional)    | object                                          | The original request object.                                                                               |
 
 ### Example Usage
 
 ```javascript
-import { NelaAGI } from "../nela-agi";
+import { NelaAGI } from "nela-agi";
 
 const nelaAGI = new NelaAGI("account_id", "auth_key");
 
@@ -597,31 +597,31 @@ The `speechToText: SpeechToText` is a property of the `audio: Audio` class and i
 
 ### Input Parameters
 
-| Parameter Name | Data Type | Default Value | Constraints                                                      | Description                                                                                                                  |
-| -------------- | --------- | ------------- | ---------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| audio          | File      | Nil           | audio_content_type should be in MP3, MPEG and WAV audio formats. | Specifies the audio file containing the spoken language to transcribe. Ensure the audio file is in MP3, MPEG, or WAV format. |
+| Parameter Name | Data Type                             | Default Value | Constraints                                                      | Description                                                                                                                  |
+| -------------- | ------------------------------------- | ------------- | ---------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| audio          | string or File or Blob or ArrayBuffer | Nil           | audio_content_type should be in MP3, MPEG and WAV audio formats. | Specifies the audio file containing the spoken language to transcribe. Ensure the audio file is in MP3, MPEG, or WAV format. |
 
 ### Outputs Parameters
 
 The fetch method returns a promise that resolves to the speech-to-text response from the API. The response is an AxiosResponse object with the following structure
 
-| Parameter Name        | Data Type                                     | Description                                                                                               |
-| --------------------- | --------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
-| data                  | object                                        | Contains the output text, model time taken.                                                               |
-| data.output           | object                                        | Contains the generated content. It is a list containing a dictionary with **"type"** and **"data"** keys. |
-| data.output.type      | string                                        | Specifies the type of the generated content. This API will always generate **"text"** type output.        |
-| data.output.data      | string                                        | Contains the actual generated text content.                                                               |
-| data.model_time_taken | number                                        | Indicates the time (in seconds) taken by the model to generate the output.                                |
-| status                | number                                        | The HTTP status code of the response.                                                                     |
-| statusText            | string                                        | The status message of the response.                                                                       |
-| headers               | RawAxiosResponseHeaders\|AxiosResponseHeaders | The headers of the response.                                                                              |
-| config                | InternalAxiosRequestConfig                    | The Axios request configuration.                                                                          |
-| request (optional)    | object                                        | The original request object.                                                                              |
+| Parameter Name        | Data Type                                       | Description                                                                                               |
+| --------------------- | ----------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| data                  | object                                          | Contains the output text, model time taken.                                                               |
+| data.output           | object                                          | Contains the generated content. It is a list containing a dictionary with **"type"** and **"data"** keys. |
+| data.output.type      | string                                          | Specifies the type of the generated content. This API will always generate **"text"** type output.        |
+| data.output.data      | string                                          | Contains the actual generated text content.                                                               |
+| data.model_time_taken | number                                          | Indicates the time (in seconds) taken by the model to generate the output.                                |
+| status                | number                                          | The HTTP status code of the response.                                                                     |
+| statusText            | string                                          | The status message of the response.                                                                       |
+| headers               | RawAxiosResponseHeaders or AxiosResponseHeaders | The headers of the response.                                                                              |
+| config                | InternalAxiosRequestConfig                      | The Axios request configuration.                                                                          |
+| request (optional)    | object                                          | The original request object.                                                                              |
 
 ### Example Usage
 
 ```javascript
-import { NelaAGI } from "../nela-agi";
+import { NelaAGI } from "nela-agi";
 
 const nelaAGI = new NelaAGI("account_id", "auth_key");
 
@@ -649,31 +649,31 @@ The `speechEnhancement: SpeechEnhancement` is a property of the `audio: Audio` c
 
 ### Input Parameters
 
-| Parameter Name | Data Type | Default Value | Constraints                                                      | Description                                                                       |
-| -------------- | --------- | ------------- | ---------------------------------------------------------------- | --------------------------------------------------------------------------------- |
-| audio          | File      | Nil           | audio_content_type should be in MP3, MPEG and WAV audio formats. | Specifies the audio file to enhance. Ensure the file format is MP3, MPEG, or WAV. |
+| Parameter Name | Data Type                             | Default Value | Constraints                                                      | Description                                                                       |
+| -------------- | ------------------------------------- | ------------- | ---------------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| audio          | string or File or Blob or ArrayBuffer | Nil           | audio_content_type should be in MP3, MPEG and WAV audio formats. | Specifies the audio file to enhance. Ensure the file format is MP3, MPEG, or WAV. |
 
 ### Outputs Parameters
 
 The fetch method returns a promise that resolves to the speech-enhancement response from the API. The response is an AxiosResponse object with the following structure
 
-| Parameter Name        | Data Type                                     | Description                                                                                                |
-| --------------------- | --------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| data                  | object                                        | Contains the output audio, model time taken.                                                               |
-| data.output           | object                                        | Contains the generated content. It is a list containing a dictionary with **"type"** and **"data"** keys.  |
-| data.output.type      | string                                        | Specifies the type of the generated content. This API will always generate **"audio_base64"** type output. |
-| data.output.data      | string                                        | Contains the actual generated audio_base64 content.                                                        |
-| data.model_time_taken | number                                        | Indicates the time (in seconds) taken by the model to generate the output.                                 |
-| status                | number                                        | The HTTP status code of the response.                                                                      |
-| statusText            | string                                        | The status message of the response.                                                                        |
-| headers               | RawAxiosResponseHeaders\|AxiosResponseHeaders | The headers of the response.                                                                               |
-| config                | InternalAxiosRequestConfig                    | The Axios request configuration.                                                                           |
-| request (optional)    | object                                        | The original request object.                                                                               |
+| Parameter Name        | Data Type                                       | Description                                                                                                |
+| --------------------- | ----------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| data                  | object                                          | Contains the output audio, model time taken.                                                               |
+| data.output           | object                                          | Contains the generated content. It is a list containing a dictionary with **"type"** and **"data"** keys.  |
+| data.output.type      | string                                          | Specifies the type of the generated content. This API will always generate **"audio_base64"** type output. |
+| data.output.data      | string                                          | Contains the actual generated audio_base64 content.                                                        |
+| data.model_time_taken | number                                          | Indicates the time (in seconds) taken by the model to generate the output.                                 |
+| status                | number                                          | The HTTP status code of the response.                                                                      |
+| statusText            | string                                          | The status message of the response.                                                                        |
+| headers               | RawAxiosResponseHeaders or AxiosResponseHeaders | The headers of the response.                                                                               |
+| config                | InternalAxiosRequestConfig                      | The Axios request configuration.                                                                           |
+| request (optional)    | object                                          | The original request object.                                                                               |
 
 ### Example Usage
 
 ```javascript
-import { NelaAGI } from "../nela-agi";
+import { NelaAGI } from "nela-agi";
 
 const nelaAGI = new NelaAGI("account_id", "auth_key");
 
@@ -701,32 +701,32 @@ The `musicSeparation: MusicSeparation` is a property of the `audio: Audio` class
 
 ### Input Parameters
 
-| Parameter Name | Data Type | Default Value | Constraints                                                      | Description                                                                                                                                                                                                                                          |
-| -------------- | --------- | ------------- | ---------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| audio          | File      | Nil           | audio_content_type should be in MP3, MPEG and WAV audio formats. | Specifies the audio file to segment or dissect. Use this parameter to provide the audio file you want to separate into music sections or isolate vocals for karaoke purposes.                                                                        |
-| split          | str       | KARAOKE       | split should be in ALL or KARAOKE segmentation format.           | Determines the type of separation to perform on the audio file. Use **"ALL"** to segment the entire file into distinct music sections (e.g., vocals, drums, bass). Use **"KARAOKE"** to isolate vocals from background music or instrumental tracks. |
+| Parameter Name | Data Type                             | Default Value | Constraints                                                      | Description                                                                                                                                                                                                                                          |
+| -------------- | ------------------------------------- | ------------- | ---------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| audio          | string or File or Blob or ArrayBuffer | Nil           | audio_content_type should be in MP3, MPEG and WAV audio formats. | Specifies the audio file to segment or dissect. Use this parameter to provide the audio file you want to separate into music sections or isolate vocals for karaoke purposes.                                                                        |
+| split          | str                                   | KARAOKE       | split should be in ALL or KARAOKE segmentation format.           | Determines the type of separation to perform on the audio file. Use **"ALL"** to segment the entire file into distinct music sections (e.g., vocals, drums, bass). Use **"KARAOKE"** to isolate vocals from background music or instrumental tracks. |
 
 ### Outputs Parameters
 
 The fetch method returns a promise that resolves to the speech-enhancement response from the API. The response is an AxiosResponse object with the following structure
 
-| Parameter Name        | Data Type                                     | Description                                                                                                                    |
-| --------------------- | --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| data                  | object                                        | Contains the output audio, model time taken.                                                                                   |
-| data.output           | object                                        | Contains the generated content. It is a list containing a dictionary with **"type"** and **"data"** keys.                      |
-| data.output.type      | string                                        | Specifies the type of the generated content. This API will always generate both **“text”** and **"audio_base64"** type output. |
-| data.output.data      | string                                        | Contains the actual generated audio_base64 content.                                                                            |
-| data.model_time_taken | number                                        | Indicates the time (in seconds) taken by the model to generate the output.                                                     |
-| status                | number                                        | The HTTP status code of the response.                                                                                          |
-| statusText            | string                                        | The status message of the response.                                                                                            |
-| headers               | RawAxiosResponseHeaders\|AxiosResponseHeaders | The headers of the response.                                                                                                   |
-| config                | InternalAxiosRequestConfig                    | The Axios request configuration.                                                                                               |
-| request (optional)    | object                                        | The original request object.                                                                                                   |
+| Parameter Name        | Data Type                                       | Description                                                                                                                    |
+| --------------------- | ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| data                  | object                                          | Contains the output audio, model time taken.                                                                                   |
+| data.output           | object                                          | Contains the generated content. It is a list containing a dictionary with **"type"** and **"data"** keys.                      |
+| data.output.type      | string                                          | Specifies the type of the generated content. This API will always generate both **“text”** and **"audio_base64"** type output. |
+| data.output.data      | string                                          | Contains the actual generated audio_base64 content.                                                                            |
+| data.model_time_taken | number                                          | Indicates the time (in seconds) taken by the model to generate the output.                                                     |
+| status                | number                                          | The HTTP status code of the response.                                                                                          |
+| statusText            | string                                          | The status message of the response.                                                                                            |
+| headers               | RawAxiosResponseHeaders or AxiosResponseHeaders | The headers of the response.                                                                                                   |
+| config                | InternalAxiosRequestConfig                      | The Axios request configuration.                                                                                               |
+| request (optional)    | object                                          | The original request object.                                                                                                   |
 
 ### Example Usage
 
 ```javascript
-import { NelaAGI } from "../nela-agi";
+import { NelaAGI } from "nela-agi";
 
 const nelaAGI = new NelaAGI("account_id", "auth_key");
 

@@ -1,7 +1,10 @@
-import fs from "fs";
-import { NelaAGI, NelaAGIError, createBlobFromFilePath } from "../../src";
+import { NelaAGI, NelaAGIError } from "../../src";
 import { MusicSeparation } from "../../src/audio/music-separation";
-import { getContentTypeFromBuffer } from "../../src/utils";
+import {
+  getContentTypeFromArrayBuffer,
+  readLocalFileAsArrayBuffer,
+  readLocalFileAsBlob,
+} from "../../src/utils";
 
 describe("MusicSeparation", () => {
   const validAccountId = process.env.TEST_NELA_ACCOUNTID;
@@ -13,10 +16,63 @@ describe("MusicSeparation", () => {
     musicSeparation = new MusicSeparation(client);
   });
 
+  // Successfully fetch music-separation with only required audio as Url and split
+  it("should successfully fetch music-separation with only required audio as Url and split", async () => {
+    // Arrange
+    const audio =
+      "https://beta-nela.eliteappmakers.in/chatbot-suggestions/music-separation.mp3";
+    const split = "ALL";
+    const url =
+      "https://beta-apis.eliteappmakers.in/am_muspnet_v1/v0_2/music_separation";
+    const method = "post";
+    const responseData = {
+      output: expect.arrayContaining([
+        { type: expect.any(String), data: expect.any(String) },
+      ]),
+      model_time_taken: expect.any(Number),
+    };
+
+    // Act
+    const result = await musicSeparation.fetch(audio, split);
+
+    // Assert
+    expect(result.data).toMatchObject(responseData);
+    const axiosConfig = result.config;
+    expect(axiosConfig.url).toBe(url);
+    expect(axiosConfig.method).toBe(method);
+    expect(axiosConfig.headers["Content-Type"]).toContain(
+      "multipart/form-data"
+    );
+  }, 120000);
+
+  // Successfully fetch music-separation with only required audio as Invalid Url and split
+  it("should successfully fetch music-separation with only required audio as Invalid Url and split", async () => {
+    // Arrange
+    const audio =
+      "https://beta-nela.eliteappmakers.in/chatbot-suggestions/music-separation-1.mp3";
+    const split = "ALL";
+    const expectedErrorCode = 422;
+    const expectedErrorMessage =
+      "audio should be a valid url string failed due to";
+    let catchExecuted = false;
+
+    // Act & Assert
+    try {
+      const resultPromise = await musicSeparation.fetch(audio, split);
+    } catch (error: any) {
+      expect(error).toBeInstanceOf(NelaAGIError);
+      expect(error.status_code).toBe(expectedErrorCode);
+      expect(error.message).toContain(expectedErrorMessage);
+      catchExecuted = true;
+    }
+
+    expect(catchExecuted).toBe(true);
+  }, 120000);
+
   // Successfully fetch music-separation with only required audio as Blob and split
   it("should successfully fetch music-separation with only required audio as Blob and split", async () => {
     // Arrange
-    const audio = createBlobFromFilePath("./tests/assets/music-separation.mp3");
+    const audio = readLocalFileAsBlob("./tests/assets/music-separation.mp3");
     const split = "ALL";
     const url =
       "https://beta-apis.eliteappmakers.in/am_muspnet_v1/v0_2/music_separation";
@@ -45,11 +101,13 @@ describe("MusicSeparation", () => {
     );
   }, 120000);
 
-  // Successfully fetch music-separation with only required audio as Buffer and split
-  it("should successfully fetch music-separation with only required audio as Buffer and split", async () => {
+  // Successfully fetch music-separation with only required audio as ArrayBuffer and split
+  it("should successfully fetch music-separation with only required audio as ArrayBuffer and split", async () => {
     // Arrange
-    const audio = fs.readFileSync("./tests/assets/music-separation.wav");
-    const audioContentType = getContentTypeFromBuffer(audio);
+    const audio = readLocalFileAsArrayBuffer(
+      "./tests/assets/music-separation.wav"
+    );
+    const audioContentType = getContentTypeFromArrayBuffer(audio);
     const audioBlob = new Blob([audio], {
       type: audioContentType,
     });
@@ -84,7 +142,7 @@ describe("MusicSeparation", () => {
   // Reject with NelaAGIError if Audio format should be MP3, MPEG or WAV"
   it("should reject with NelaAGIError when Audio format should be MP3, MPEG or WAV", async () => {
     // Arrange
-    const audio = createBlobFromFilePath("./tests/assets/image-inpainting.jpg");
+    const audio = readLocalFileAsBlob("./tests/assets/image-inpainting.jpg");
     const split = "ALL";
     const expectedErrorCode = 422;
     const expectedErrorMessage = "audio format should be MP3, MPEG or WAV";
@@ -106,7 +164,7 @@ describe("MusicSeparation", () => {
   // Reject with NelaAGIError when Split format should be 'ALL' or 'KARAOKE'
   it("should reject with NelaAGIError when Split format should be 'ALL' or 'KARAOKE'", async () => {
     // Arrange
-    const audio = createBlobFromFilePath("./tests/assets/speech-to-text.mp3");
+    const audio = readLocalFileAsBlob("./tests/assets/speech-to-text.mp3");
     const split = "GUITAR";
     const expectedErrorCode = 422;
     const expectedErrorMessage = "split format should be 'ALL' or 'KARAOKE'";

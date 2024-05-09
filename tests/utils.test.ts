@@ -1,9 +1,11 @@
 import fs from "fs";
 import {
-  createBlobFromFilePath,
-  getContentTypeFromBuffer,
+  convertUrlToBlob,
+  getContentTypeFromArrayBuffer,
   getContentTypeFromExtension,
   readEnv,
+  readLocalFileAsArrayBuffer,
+  readLocalFileAsBlob,
 } from "../src/utils";
 
 describe("utils", () => {
@@ -63,106 +65,135 @@ describe("utils", () => {
     });
   });
 
-  describe("getContentTypeFromBuffer", () => {
-    // Returns "image/jpeg" if buffer matches the pattern for a JPEG image.
-    it('should return "image/jpeg" when buffer matches the pattern for a JPEG image', () => {
+  describe("convertUrlToBlob", () => {
+    // Successfully fetches and converts a valid URL to a Blob object
+    it("should fetch and convert valid URL to Blob object", async () => {
+      // Call the function
+      const result = await convertUrlToBlob(
+        "https://beta-nela.eliteappmakers.in/chatbot-suggestions/image-to-image.jpg"
+      );
+
+      // Assertions
+      expect(result).toBeInstanceOf(Blob);
+      expect(result.type).toBe("image/jpeg");
+    });
+  });
+
+  describe("readLocalFileAsArrayBuffer", () => {
+    // Returns an ArrayBuffer when given a valid file path.
+    it("should return an ArrayBuffer when given a valid file path", () => {
+      const filePath = "./tests/assets/image-inpainting.jpg";
+      const arrayBuffer = readLocalFileAsArrayBuffer(filePath);
+      expect(arrayBuffer).toBeInstanceOf(ArrayBuffer);
+    });
+  });
+
+  describe("getContentTypeFromArrayBuffer", () => {
+    // Returns "image/jpeg" if arrayBuffer matches the pattern for a JPEG image.
+    it('should return "image/jpeg" when arrayBuffer matches the pattern for a JPEG image', () => {
       // Arrange
-      const buffer = Buffer.from([0xff, 0xd8, 0xff]);
-      const fileBuffer = fs.readFileSync("./tests/assets/image-inpainting.jpg");
+      const arrayBuffer = readLocalFileAsArrayBuffer(
+        "./tests/assets/image-inpainting.jpg"
+      );
+      // const arrayBuffer = new Uint8Array([0xff, 0xd8, 0xff]).buffer;
       const expectedContentType = "image/jpeg";
 
       // Act
-      const result = getContentTypeFromBuffer(fileBuffer);
+      const result = getContentTypeFromArrayBuffer(arrayBuffer);
 
       // Assert
       expect(result).toBe(expectedContentType);
     });
 
-    // Returns "image/png" if buffer matches the pattern for a PNG image.
-    it('should return "image/png" when buffer matches the pattern for a PNG image', () => {
+    // Returns "image/png" if arrayBuffer matches the pattern for a PNG image.
+    it('should return "image/png" when arrayBuffer matches the pattern for a PNG image', () => {
       // Arrange
-      const buffer = Buffer.from([
-        0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a,
-      ]);
-      const fileBuffer = fs.readFileSync("./tests/assets/image-inpainting.png");
+      const arrayBuffer = readLocalFileAsArrayBuffer(
+        "./tests/assets/image-inpainting.png"
+      );
+      // const arrayBuffer = new Uint8Array([
+      //   0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a,
+      // ]).buffer;
       const expectedContentType = "image/png";
 
       // Act
-      const result = getContentTypeFromBuffer(fileBuffer);
+      const result = getContentTypeFromArrayBuffer(arrayBuffer);
 
       // Assert
       expect(result).toBe(expectedContentType);
     });
 
-    // Returns "audio/mpeg" if buffer matches the pattern for an MP3 audio file with ID3 header.
-    it('should return "audio/mpeg" when buffer matches the pattern for an MP3 audio file with ID3 header', () => {
+    // Returns "audio/mpeg" if arrayBuffer matches the pattern for an MP3 audio file with ID3 header.
+    it('should return "audio/mpeg" when arrayBuffer matches the pattern for an MP3 audio file with ID3 header', () => {
       // Arrange
-      const buffer = Buffer.from([0x49, 0x44, 0x33]);
-      const fileBuffer = fs.readFileSync("./tests/assets/music-separation.mp3");
+      const arrayBuffer = readLocalFileAsArrayBuffer(
+        "./tests/assets/music-separation.mp3"
+      );
+      // const arrayBuffer = new Uint8Array([0x49, 0x44, 0x33]).buffer;
       const expectedContentType = "audio/mpeg";
 
       // Act
-      const result = getContentTypeFromBuffer(fileBuffer);
+      const result = getContentTypeFromArrayBuffer(arrayBuffer);
 
       // Assert
       expect(result).toBe(expectedContentType);
     });
 
-    // Returns "audio/mpeg" if buffer matches the pattern for an MP3 audio file with Frame sync header.
-    it('should return "audio/mpeg" when buffer matches the pattern for an MP3 audio file with Frame sync header', () => {
+    // Returns "audio/mpeg" if arrayBuffer matches the pattern for an MP3 audio file with Frame sync header.
+    it('should return "audio/mpeg" when arrayBuffer matches the pattern for an MP3 audio file with Frame sync header', () => {
       // Arrange
-      const buffer = Buffer.from([0x49, 0x44, 0x33]);
-      const fileBuffer = fs.readFileSync(
+      const arrayBuffer = readLocalFileAsArrayBuffer(
         "./tests/assets/speech-enhancement.mp3"
       );
+      // const arrayBuffer = new Uint8Array([0x49, 0x44, 0x33]).buffer;
       const expectedContentType = "audio/mpeg";
 
       // Act
-      const result = getContentTypeFromBuffer(fileBuffer);
+      const result = getContentTypeFromArrayBuffer(arrayBuffer);
 
       // Assert
       expect(result).toBe(expectedContentType);
     });
 
-    // Returns "audio/wav" if buffer matches the pattern for an WAV audio file.
-    it('should return "audio/wav" when buffer matches the pattern for an WAV audio file', () => {
+    // Returns "audio/wav" if arrayBuffer matches the pattern for an WAV audio file.
+    it('should return "audio/wav" when arrayBuffer matches the pattern for an WAV audio file', () => {
       // Arrange
-      const buffer = Buffer.from([
-        0x52, 0x49, 0x46, 0x46, 0x00, 0x00, 0x00, 0x00, 0x57, 0x41, 0x56, 0x45,
-      ]);
-      const fileBuffer = fs.readFileSync(
+      const arrayBuffer = readLocalFileAsArrayBuffer(
         "./tests/assets/speech-enhancement.wav"
       );
+      // const arrayBuffer = new Uint8Array([
+      //   0x52, 0x49, 0x46, 0x46, 0x00, 0x00, 0x00, 0x00, 0x57, 0x41, 0x56, 0x45,
+      // ]).buffer;
       const expectedContentType = "audio/wav";
 
       // Act
-      const result = getContentTypeFromBuffer(fileBuffer);
+      const result = getContentTypeFromArrayBuffer(arrayBuffer);
 
       // Assert
       expect(result).toBe(expectedContentType);
     });
 
-    // Returns unknown if buffer is empty.
-    it("should return unknown when buffer is empty", () => {
+    // Returns unknown if arrayBuffer is empty.
+    it("should return unknown when arrayBuffer is empty", () => {
       // Arrange
-      const buffer = Buffer.from([]);
+      const arrayBuffer = new Uint8Array([]).buffer;
       const expectedContentType = "unknown";
 
       // Act
-      const result = getContentTypeFromBuffer(buffer);
+      const result = getContentTypeFromArrayBuffer(arrayBuffer);
 
       // Assert
       expect(result).toBe(expectedContentType);
     });
 
-    // Returns unknown if buffer does not match any of the patterns.
-    it("should return unknown when buffer does not match any of the patterns", () => {
+    // Returns unknown if arrayBuffer does not match any of the patterns.
+    it("should return unknown when arrayBuffer does not match any of the patterns", () => {
       // Arrange
-      const buffer = Buffer.from([0x00, 0x00, 0x00]);
+      const arrayBuffer = new Uint8Array([0x00, 0x00, 0x00]).buffer;
       const expectedContentType = "unknown";
 
       // Act
-      const result = getContentTypeFromBuffer(buffer);
+      const result = getContentTypeFromArrayBuffer(arrayBuffer);
 
       // Assert
       expect(result).toBe(expectedContentType);
@@ -226,7 +257,7 @@ describe("utils", () => {
     });
   });
 
-  describe("createBlobFromFilePath", () => {
+  describe("readLocalFileAsBlob", () => {
     // should create a Blob object from a valid file path
     it("should create a Blob object when given a valid file path", () => {
       // Arrange
@@ -234,7 +265,7 @@ describe("utils", () => {
       const expectedContentType = "audio/mpeg";
 
       // Act
-      const result = createBlobFromFilePath(filePath);
+      const result = readLocalFileAsBlob(filePath);
 
       // Assert
       expect(result).toBeInstanceOf(Blob);
@@ -253,7 +284,7 @@ describe("utils", () => {
         .mockReturnValue(Buffer.from([0xff, 0x44, 0x33]));
 
       // Act
-      const result = createBlobFromFilePath(filePath);
+      const result = readLocalFileAsBlob(filePath);
 
       // Assert
       expect(fs.readFileSync).toHaveBeenCalledWith(filePath);
@@ -273,7 +304,7 @@ describe("utils", () => {
         .mockReturnValue(Buffer.from([0xff, 0x44, 0x33]));
 
       // Act
-      const result = createBlobFromFilePath(filePath);
+      const result = readLocalFileAsBlob(filePath);
 
       // Assert
       expect(fs.readFileSync).toHaveBeenCalledWith(filePath);
@@ -293,7 +324,7 @@ describe("utils", () => {
         .mockReturnValue(Buffer.from([0x4f, 0x44, 0x33])); // Mock file buffer
 
       // Act
-      const result = createBlobFromFilePath(filePath);
+      const result = readLocalFileAsBlob(filePath);
 
       // Assert
       expect(fs.readFileSync).toHaveBeenCalledWith(filePath);

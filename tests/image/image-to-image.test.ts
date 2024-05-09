@@ -1,7 +1,10 @@
-import fs from "fs";
-import { NelaAGI, NelaAGIError, createBlobFromFilePath } from "../../src";
+import { NelaAGI, NelaAGIError } from "../../src";
 import { ImageToImage } from "../../src/image/image-to-image";
-import { getContentTypeFromBuffer } from "../../src/utils";
+import {
+  getContentTypeFromArrayBuffer,
+  readLocalFileAsArrayBuffer,
+  readLocalFileAsBlob,
+} from "../../src/utils";
 
 describe("ImageToImage", () => {
   const validAccountId = process.env.TEST_NELA_ACCOUNTID;
@@ -13,10 +16,66 @@ describe("ImageToImage", () => {
     imageToImage = new ImageToImage(client);
   });
 
+  // Successfully fetch imageToImage with only required image as Url and prompt
+  it("should successfully fetch imageToImage with only required image as Url and prompt", async () => {
+    // Arrange
+    const image =
+      "https://beta-nela.eliteappmakers.in/chatbot-suggestions/image-to-image.jpg";
+    const prompt = "a beautiful landscape image";
+    const url =
+      "https://beta-apis.eliteappmakers.in/im_sdxl_base_v1/v0_2/image_to_image";
+    const method = "post";
+    const responseData = {
+      output: [
+        {
+          type: "image_base64",
+          data: expect.any(String),
+        },
+      ],
+      model_time_taken: expect.any(Number),
+    };
+
+    // Act
+    const result = await imageToImage.fetch(image, prompt);
+
+    // Assert
+    expect(result.data).toMatchObject(responseData);
+    const axiosConfig = result.config;
+    expect(axiosConfig.url).toBe(url);
+    expect(axiosConfig.method).toBe(method);
+    expect(axiosConfig.headers["Content-Type"]).toContain(
+      "multipart/form-data"
+    );
+  }, 120000);
+
+  // Successfully fetch imageToImage with only required image as Invalid Url and prompt
+  it("should successfully fetch imageToImage with only required image as Invalid Url and prompt", async () => {
+    // Arrange
+    const image =
+      "https://beta-nela.eliteappmakers.in/chatbot-suggestions/image-to-image-1.mp3";
+    const prompt = "a beautiful landscape image";
+    const expectedErrorCode = 422;
+    const expectedErrorMessage =
+      "image should be a valid url string failed due to";
+    let catchExecuted = false;
+
+    // Act & Assert
+    try {
+      const resultPromise = await imageToImage.fetch(image, prompt);
+    } catch (error: any) {
+      expect(error).toBeInstanceOf(NelaAGIError);
+      expect(error.status_code).toBe(expectedErrorCode);
+      expect(error.message).toContain(expectedErrorMessage);
+      catchExecuted = true;
+    }
+
+    expect(catchExecuted).toBe(true);
+  }, 120000);
+
   // Successfully fetch imageToImage with only required image as Blob, prompt and default parameters
   it("should successfully fetch imageToImage with only required image as Blob, prompt and default parameters", async () => {
     // Arrange
-    const image = createBlobFromFilePath("./tests/assets/image-to-image.png");
+    const image = readLocalFileAsBlob("./tests/assets/image-to-image.png");
     const prompt = "a beautiful landscape image";
     const url =
       "https://beta-apis.eliteappmakers.in/im_sdxl_base_v1/v0_2/image_to_image";
@@ -55,11 +114,13 @@ describe("ImageToImage", () => {
     );
   }, 120000);
 
-  // Successfully fetch imageToImage with only required image as Buffer, prompt and default parameters
-  it("should successfully fetch imageToImage with only required image as Buffer, prompt and default parameters", async () => {
+  // Successfully fetch imageToImage with only required image as ArrayBuffer, prompt and default parameters
+  it("should successfully fetch imageToImage with only required image as ArrayBuffer, prompt and default parameters", async () => {
     // Arrange
-    const image = fs.readFileSync("./tests/assets/image-to-image.png");
-    let imageContentType = getContentTypeFromBuffer(image);
+    const image = readLocalFileAsArrayBuffer(
+      "./tests/assets/image-to-image.png"
+    );
+    let imageContentType = getContentTypeFromArrayBuffer(image);
     const imageBlob = new Blob([image], {
       type: imageContentType,
     });
@@ -104,7 +165,7 @@ describe("ImageToImage", () => {
   // Successfully fetch imageToImage with valid image, prompt and custom parameters
   it("should successfully fetch imageToImage with valid image, prompt and custom parameters", async () => {
     // Arrange
-    const image = createBlobFromFilePath("./tests/assets/image-to-image.jpg");
+    const image = readLocalFileAsBlob("./tests/assets/image-to-image.jpg");
     const prompt = "Generate a beautiful landscape image";
     const negativePrompt = "Avoid any buildings or man-made structures";
     const cropsCoordsTopLeftX = 100;
@@ -164,7 +225,7 @@ describe("ImageToImage", () => {
   // Reject with NelaAGIError if Image format is not PNG or JPEG
   it("should reject with NelaAGIError when Image format is not PNG or JPEG", async () => {
     // Arrange
-    const image = createBlobFromFilePath("./tests/assets/speech-to-text.mp3");
+    const image = readLocalFileAsBlob("./tests/assets/speech-to-text.mp3");
     const prompt = "abc";
     const expectedErrorCode = 422;
     const expectedErrorMessage = "image format should be PNG or JPEG";
@@ -186,7 +247,7 @@ describe("ImageToImage", () => {
   // Reject with NelaAGIError if prompt length is less than 3 characters
   it("should reject with NelaAGIError when prompt length is less than 3 characters", async () => {
     // Arrange
-    const image = createBlobFromFilePath("./tests/assets/image-to-image.png");
+    const image = readLocalFileAsBlob("./tests/assets/image-to-image.png");
     const prompt = "ab";
     const expectedErrorCode = 422;
     const expectedErrorMessage =
@@ -209,7 +270,7 @@ describe("ImageToImage", () => {
   // Reject with NelaAGIError if prompt length is greater than 275 characters
   it("should reject with NelaAGIError when prompt length is greater than 275 characters", async () => {
     // Arrange
-    const image = createBlobFromFilePath("./tests/assets/image-to-image.png");
+    const image = readLocalFileAsBlob("./tests/assets/image-to-image.png");
     const prompt =
       "This is a prompt with more than 275 characters. This is a prompt with more than 275 characters. This is a prompt with more than 275 characters. This is a prompt with more than 275 characters. This is a prompt with more than 275 characters. This is a prompt with more than 275 characters.";
     const expectedErrorCode = 422;
@@ -232,7 +293,7 @@ describe("ImageToImage", () => {
   // Reject with NelaAGIError if negativePrompt length is less than 3 characters
   it("should reject with NelaAGIError when negativePrompt length is less than 3 characters", async () => {
     // Arrange
-    const image = createBlobFromFilePath("./tests/assets/image-to-image.png");
+    const image = readLocalFileAsBlob("./tests/assets/image-to-image.png");
     const prompt = "Generate a beautiful landscape image";
     const negativePrompt = "ab";
     const expectedErrorCode = 422;
@@ -260,7 +321,7 @@ describe("ImageToImage", () => {
   // Reject with NelaAGIError if negativePrompt length is greater than 275 characters
   it("should reject with NelaAGIError when negativePrompt length is greater than 275 characters", async () => {
     // Arrange
-    const image = createBlobFromFilePath("./tests/assets/image-to-image.png");
+    const image = readLocalFileAsBlob("./tests/assets/image-to-image.png");
     const prompt = "Generate a beautiful landscape image";
     const negativePrompt =
       "This is a negativePrompt with more than 275 characters. This is a negativePrompt with more than 275 characters. This is a negativePrompt with more than 275 characters. This is a negativePrompt with more than 275 characters. This is a negativePrompt with more than 275 characters.";
@@ -288,7 +349,7 @@ describe("ImageToImage", () => {
   // Reject with NelaAGIError if cropsCoordsTopLeftX parameter is not between 0 and 1024
   it("should reject with NelaAGIError when cropsCoordsTopLeftX parameter is not between 0 and 1024", async () => {
     // Arrange
-    const image = createBlobFromFilePath("./tests/assets/image-to-image.png");
+    const image = readLocalFileAsBlob("./tests/assets/image-to-image.png");
     const prompt = "Generate a beautiful landscape image";
     const negativePrompt = "Avoid any buildings or man-made structures";
 
@@ -322,7 +383,7 @@ describe("ImageToImage", () => {
   // Reject with NelaAGIError if cropsCoordsTopLeftY parameter is not between 0 and 1024
   it("should reject with NelaAGIError when cropsCoordsTopLeftY parameter is not between 0 and 1024", async () => {
     // Arrange
-    const image = createBlobFromFilePath("./tests/assets/image-to-image.png");
+    const image = readLocalFileAsBlob("./tests/assets/image-to-image.png");
     const prompt = "Generate a beautiful landscape image";
     const negativePrompt = "Avoid any buildings or man-made structures";
     const cropsCoordsTopLeftX = 512;
@@ -357,7 +418,7 @@ describe("ImageToImage", () => {
   // Reject with NelaAGIError if seed parameter is not between 0 and 9999999999
   it("should reject with NelaAGIError when seed parameter is not between 0 and 9999999999", async () => {
     // Arrange
-    const image = createBlobFromFilePath("./tests/assets/image-to-image.png");
+    const image = readLocalFileAsBlob("./tests/assets/image-to-image.png");
     const prompt = "Generate a beautiful landscape image";
     const negativePrompt = "Avoid any buildings or man-made structures";
     const cropsCoordsTopLeftX = 512;
@@ -394,7 +455,7 @@ describe("ImageToImage", () => {
   // Reject with NelaAGIError if numInferenceSteps parameter is not between 1 and 75
   it("should reject with NelaAGIError when numInferenceSteps parameter is not between 1 and 75", async () => {
     // Arrange
-    const image = createBlobFromFilePath("./tests/assets/image-to-image.png");
+    const image = readLocalFileAsBlob("./tests/assets/image-to-image.png");
     const prompt = "Generate a beautiful landscape image";
     const negativePrompt = "Avoid any buildings or man-made structures";
     const cropsCoordsTopLeftX = 512;
@@ -432,7 +493,7 @@ describe("ImageToImage", () => {
   // Reject with NelaAGIError if guidanceScale parameter is not between 0 and 15
   it("should reject with NelaAGIError when strength parameter is not between 0.0 and 1.0", async () => {
     // Arrange
-    const image = createBlobFromFilePath("./tests/assets/image-to-image.png");
+    const image = readLocalFileAsBlob("./tests/assets/image-to-image.png");
     const prompt = "Generate a beautiful landscape image";
     const negativePrompt = "Avoid any buildings or man-made structures";
     const cropsCoordsTopLeftX = 512;
@@ -471,7 +532,7 @@ describe("ImageToImage", () => {
   // Reject with NelaAGIError if guidanceScale parameter is not between 0 and 15
   it("should reject with NelaAGIError when guidanceScale parameter is not between 0 and 15", async () => {
     // Arrange
-    const image = createBlobFromFilePath("./tests/assets/image-to-image.png");
+    const image = readLocalFileAsBlob("./tests/assets/image-to-image.png");
     const prompt = "Generate a beautiful landscape image";
     const negativePrompt = "Avoid any buildings or man-made structures";
     const cropsCoordsTopLeftX = 512;
@@ -514,7 +575,7 @@ describe("ImageToImage", () => {
   // Reject with NelaAGIError if imageFormat parameter is not PNG or JPEG
   it("should reject with NelaAGIError when imageFormat parameter is not PNG or JPEG", async () => {
     // Arrange
-    const image = createBlobFromFilePath("./tests/assets/image-to-image.png");
+    const image = readLocalFileAsBlob("./tests/assets/image-to-image.png");
     const prompt = "Generate a beautiful landscape image";
     const negativePrompt = "Avoid any buildings or man-made structures";
     const cropsCoordsTopLeftX = 512;

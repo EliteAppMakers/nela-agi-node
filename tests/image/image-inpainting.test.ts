@@ -1,7 +1,10 @@
-import fs from "fs";
-import { NelaAGI, NelaAGIError, createBlobFromFilePath } from "../../src";
+import { NelaAGI, NelaAGIError } from "../../src";
 import { ImageInpainting } from "../../src/image/image-inpainting";
-import { getContentTypeFromBuffer } from "../../src/utils";
+import {
+  getContentTypeFromArrayBuffer,
+  readLocalFileAsArrayBuffer,
+  readLocalFileAsBlob,
+} from "../../src/utils";
 
 describe("ImageInpainting", () => {
   const validAccountId = process.env.TEST_NELA_ACCOUNTID;
@@ -13,11 +16,105 @@ describe("ImageInpainting", () => {
     imageInpainting = new ImageInpainting(client);
   });
 
+  // Successfully fetch imageInpainting with only required image as Url, maskImage as Url and prompt
+  it("should successfully fetch imageInpainting with only required image as Url, maskImage as Url and prompt", async () => {
+    // Arrange
+    const image =
+      "https://beta-nela.eliteappmakers.in/chatbot-suggestions/image-inpainting.jpg";
+    const maskImage =
+      "https://beta-nela.eliteappmakers.in/chatbot-suggestions/image-inpainting-mask.jpg";
+    const prompt = "a beautiful landscape image";
+    const url =
+      "https://beta-apis.eliteappmakers.in/im_sdxl_base_v1/v0_2/image_inpainting";
+    const method = "post";
+    const responseData = {
+      output: [
+        {
+          type: "image_base64",
+          data: expect.any(String),
+        },
+      ],
+      model_time_taken: expect.any(Number),
+    };
+
+    // Act
+    const result = await imageInpainting.fetch(image, maskImage, prompt);
+
+    // Assert
+    expect(result.data).toMatchObject(responseData);
+    const axiosConfig = result.config;
+    expect(axiosConfig.url).toBe(url);
+    expect(axiosConfig.method).toBe(method);
+    expect(axiosConfig.headers["Content-Type"]).toContain(
+      "multipart/form-data"
+    );
+  }, 120000);
+
+  // Successfully fetch imageInpainting with only required image as Invalid Url, maskImage as valid Url and prompt
+  it("should successfully fetch imageInpainting with only required image as Invalid Url, maskImage as valid Url and prompt", async () => {
+    // Arrange
+    const image =
+      "https://beta-nela.eliteappmakers.in/chatbot-suggestions/image-to-image-1.jpg";
+    const maskImage =
+      "https://beta-nela.eliteappmakers.in/chatbot-suggestions/image-inpainting-mask.jpg";
+    const prompt = "a beautiful landscape image";
+    const expectedErrorCode = 422;
+    const expectedErrorMessage =
+      "image should be a valid url string failed due to";
+    let catchExecuted = false;
+
+    // Act & Assert
+    try {
+      const resultPromise = await imageInpainting.fetch(
+        image,
+        maskImage,
+        prompt
+      );
+    } catch (error: any) {
+      expect(error).toBeInstanceOf(NelaAGIError);
+      expect(error.status_code).toBe(expectedErrorCode);
+      expect(error.message).toContain(expectedErrorMessage);
+      catchExecuted = true;
+    }
+
+    expect(catchExecuted).toBe(true);
+  }, 120000);
+
+  // Successfully fetch imageInpainting with only required image as valid Url, maskImage as Invalid Url and prompt
+  it("should successfully fetch imageInpainting with only required image as valid Url, maskImage as Invalid Url and prompt", async () => {
+    // Arrange
+    const image =
+      "https://beta-nela.eliteappmakers.in/chatbot-suggestions/image-to-image.jpg";
+    const maskImage =
+      "https://beta-nela.eliteappmakers.in/chatbot-suggestions/image-inpainting-mask-1.jpg";
+    const prompt = "a beautiful landscape image";
+    const expectedErrorCode = 422;
+    const expectedErrorMessage =
+      "maskImage should be a valid url string failed due to";
+    let catchExecuted = false;
+
+    // Act & Assert
+    try {
+      const resultPromise = await imageInpainting.fetch(
+        image,
+        maskImage,
+        prompt
+      );
+    } catch (error: any) {
+      expect(error).toBeInstanceOf(NelaAGIError);
+      expect(error.status_code).toBe(expectedErrorCode);
+      expect(error.message).toContain(expectedErrorMessage);
+      catchExecuted = true;
+    }
+
+    expect(catchExecuted).toBe(true);
+  }, 120000);
+
   // Successfully fetch imageInpainting with only required image as Blob, maskImage as Blob, prompt and default parameters
   it("should successfully fetch imageInpainting with only required image as Blob, maskImage as Blob, prompt and default parameters", async () => {
     // Arrange
-    const image = createBlobFromFilePath("./tests/assets/image-inpainting.png");
-    const maskImage = createBlobFromFilePath(
+    const image = readLocalFileAsBlob("./tests/assets/image-inpainting.png");
+    const maskImage = readLocalFileAsBlob(
       "./tests/assets/image-inpainting-mask.png"
     );
     const prompt = "a beautiful landscape image";
@@ -61,19 +158,21 @@ describe("ImageInpainting", () => {
     );
   }, 120000);
 
-  // Successfully fetch imageInpainting with only required image as Buffer, maskImage as Buffer, prompt and default parameters
-  it("should successfully fetch imageInpainting with only required image as Buffer, maskImage as Buffer, prompt and default parameters", async () => {
+  // Successfully fetch imageInpainting with only required image as ArrayBuffer, maskImage as ArrayBuffer, prompt and default parameters
+  it("should successfully fetch imageInpainting with only required image as ArrayBuffer, maskImage as ArrayBuffer, prompt and default parameters", async () => {
     // Arrange
-    const image = fs.readFileSync("./tests/assets/image-inpainting-mask.jpg");
-    const maskImage = fs.readFileSync(
+    const image = readLocalFileAsArrayBuffer(
       "./tests/assets/image-inpainting-mask.jpg"
     );
-    const imageContentType = getContentTypeFromBuffer(image);
-    const maskImageContentType = getContentTypeFromBuffer(maskImage);
+    const maskImage = readLocalFileAsArrayBuffer(
+      "./tests/assets/image-inpainting-mask.jpg"
+    );
+    const imageContentType = getContentTypeFromArrayBuffer(image);
+    const maskImageContentType = getContentTypeFromArrayBuffer(maskImage);
     const imageBlob = new Blob([image], {
       type: imageContentType,
     });
-    const maskImageBlob = new Blob([image], {
+    const maskImageBlob = new Blob([maskImage], {
       type: maskImageContentType,
     });
     const prompt = "a beautiful landscape image";
@@ -120,8 +219,8 @@ describe("ImageInpainting", () => {
   // Successfully fetch imageInpainting with valid prompt and custom parameters
   it("should successfully fetch imageInpainting with valid prompt and custom parameters", async () => {
     // Arrange
-    const image = createBlobFromFilePath("./tests/assets/image-inpainting.jpg");
-    const maskImage = createBlobFromFilePath(
+    const image = readLocalFileAsBlob("./tests/assets/image-inpainting.jpg");
+    const maskImage = readLocalFileAsBlob(
       "./tests/assets/image-inpainting-mask.jpg"
     );
     const prompt = "Generate a beautiful landscape image";
@@ -191,8 +290,8 @@ describe("ImageInpainting", () => {
   // Reject with NelaAGIError if Image format is not PNG or JPEG
   it("should reject with NelaAGIError when Image format is not PNG or JPEG", async () => {
     // Arrange
-    const image = createBlobFromFilePath("./tests/assets/speech-to-text.mp3");
-    const maskImage = createBlobFromFilePath(
+    const image = readLocalFileAsBlob("./tests/assets/speech-to-text.mp3");
+    const maskImage = readLocalFileAsBlob(
       "./tests/assets/image-inpainting-mask.jpg"
     );
     const prompt = "abc";
@@ -220,10 +319,8 @@ describe("ImageInpainting", () => {
   // Reject with NelaAGIError if maskImage format is not PNG or JPEG
   it("should reject with NelaAGIError when maskImage format is not PNG or JPEG", async () => {
     // Arrange
-    const image = createBlobFromFilePath("./tests/assets/image-inpainting.png");
-    const maskImage = createBlobFromFilePath(
-      "./tests/assets/speech-to-text.mp3"
-    );
+    const image = readLocalFileAsBlob("./tests/assets/image-inpainting.png");
+    const maskImage = readLocalFileAsBlob("./tests/assets/speech-to-text.mp3");
     const prompt = "abc";
     const expectedErrorCode = 422;
     const expectedErrorMessage = "maskImage format should be PNG or JPEG";
@@ -249,8 +346,8 @@ describe("ImageInpainting", () => {
   // Reject with NelaAGIError if prompt length is less than 3 characters
   it("should reject with NelaAGIError when prompt length is less than 3 characters", async () => {
     // Arrange
-    const image = createBlobFromFilePath("./tests/assets/image-inpainting.jpg");
-    const maskImage = createBlobFromFilePath(
+    const image = readLocalFileAsBlob("./tests/assets/image-inpainting.jpg");
+    const maskImage = readLocalFileAsBlob(
       "./tests/assets/image-inpainting-mask.jpg"
     );
     const prompt = "ab";
@@ -279,8 +376,8 @@ describe("ImageInpainting", () => {
   // Reject with NelaAGIError if prompt length is greater than 275 characters
   it("should reject with NelaAGIError when prompt length is greater than 275 characters", async () => {
     // Arrange
-    const image = createBlobFromFilePath("./tests/assets/image-to-image.png");
-    const maskImage = createBlobFromFilePath(
+    const image = readLocalFileAsBlob("./tests/assets/image-to-image.png");
+    const maskImage = readLocalFileAsBlob(
       "./tests/assets/image-inpainting-mask.jpg"
     );
     const prompt =
@@ -310,8 +407,8 @@ describe("ImageInpainting", () => {
   // Reject with NelaAGIError if negativePrompt length is less than 3 characters
   it("should reject with NelaAGIError when negativePrompt length is less than 3 characters", async () => {
     // Arrange
-    const image = createBlobFromFilePath("./tests/assets/image-to-image.png");
-    const maskImage = createBlobFromFilePath(
+    const image = readLocalFileAsBlob("./tests/assets/image-to-image.png");
+    const maskImage = readLocalFileAsBlob(
       "./tests/assets/image-inpainting-mask.jpg"
     );
     const prompt = "Generate a beautiful landscape image";
@@ -342,8 +439,8 @@ describe("ImageInpainting", () => {
   // Reject with NelaAGIError if negativePrompt length is greater than 275 characters
   it("should reject with NelaAGIError when negativePrompt length is greater than 275 characters", async () => {
     // Arrange
-    const image = createBlobFromFilePath("./tests/assets/image-to-image.png");
-    const maskImage = createBlobFromFilePath(
+    const image = readLocalFileAsBlob("./tests/assets/image-to-image.png");
+    const maskImage = readLocalFileAsBlob(
       "./tests/assets/image-inpainting-mask.jpg"
     );
     const prompt = "Generate a beautiful landscape image";
@@ -374,8 +471,8 @@ describe("ImageInpainting", () => {
 
   it("should reject with NelaAGIError when width parameter is not between 512 and 1024", async () => {
     // Arrange
-    const image = createBlobFromFilePath("./tests/assets/image-to-image.png");
-    const maskImage = createBlobFromFilePath(
+    const image = readLocalFileAsBlob("./tests/assets/image-to-image.png");
+    const maskImage = readLocalFileAsBlob(
       "./tests/assets/image-inpainting-mask.jpg"
     );
     const prompt = "Generate a beautiful landscape image";
@@ -410,8 +507,8 @@ describe("ImageInpainting", () => {
   // Reject with NelaAGIError if height parameter is not between 512 and 1024
   it("should reject with NelaAGIError when height parameter is not between 512 and 1024", async () => {
     // Arrange
-    const image = createBlobFromFilePath("./tests/assets/image-to-image.png");
-    const maskImage = createBlobFromFilePath(
+    const image = readLocalFileAsBlob("./tests/assets/image-to-image.png");
+    const maskImage = readLocalFileAsBlob(
       "./tests/assets/image-inpainting-mask.jpg"
     );
     const prompt = "Generate a beautiful landscape image";
@@ -448,8 +545,8 @@ describe("ImageInpainting", () => {
   // Reject with NelaAGIError if cropsCoordsTopLeftX parameter is not between 0 and 1024
   it("should reject with NelaAGIError when cropsCoordsTopLeftX parameter is not between 0 and 1024", async () => {
     // Arrange
-    const image = createBlobFromFilePath("./tests/assets/image-to-image.png");
-    const maskImage = createBlobFromFilePath(
+    const image = readLocalFileAsBlob("./tests/assets/image-to-image.png");
+    const maskImage = readLocalFileAsBlob(
       "./tests/assets/image-inpainting-mask.jpg"
     );
     const prompt = "Generate a beautiful landscape image";
@@ -489,8 +586,8 @@ describe("ImageInpainting", () => {
   // Reject with NelaAGIError if cropsCoordsTopLeftY parameter is not between 0 and 1024
   it("should reject with NelaAGIError when cropsCoordsTopLeftY parameter is not between 0 and 1024", async () => {
     // Arrange
-    const image = createBlobFromFilePath("./tests/assets/image-to-image.png");
-    const maskImage = createBlobFromFilePath(
+    const image = readLocalFileAsBlob("./tests/assets/image-to-image.png");
+    const maskImage = readLocalFileAsBlob(
       "./tests/assets/image-inpainting-mask.jpg"
     );
     const prompt = "Generate a beautiful landscape image";
@@ -532,8 +629,8 @@ describe("ImageInpainting", () => {
   // Reject with NelaAGIError if seed parameter is not between 0 and 9999999999
   it("should reject with NelaAGIError when seed parameter is not between 0 and 9999999999", async () => {
     // Arrange
-    const image = createBlobFromFilePath("./tests/assets/image-to-image.png");
-    const maskImage = createBlobFromFilePath(
+    const image = readLocalFileAsBlob("./tests/assets/image-to-image.png");
+    const maskImage = readLocalFileAsBlob(
       "./tests/assets/image-inpainting-mask.jpg"
     );
     const prompt = "Generate a beautiful landscape image";
@@ -577,8 +674,8 @@ describe("ImageInpainting", () => {
   // Reject with NelaAGIError if numInferenceSteps parameter is not between 1 and 75
   it("should reject with NelaAGIError when numInferenceSteps parameter is not between 1 and 75", async () => {
     // Arrange
-    const image = createBlobFromFilePath("./tests/assets/image-to-image.png");
-    const maskImage = createBlobFromFilePath(
+    const image = readLocalFileAsBlob("./tests/assets/image-to-image.png");
+    const maskImage = readLocalFileAsBlob(
       "./tests/assets/image-inpainting-mask.jpg"
     );
     const prompt = "Generate a beautiful landscape image";
@@ -624,8 +721,8 @@ describe("ImageInpainting", () => {
   // Reject with NelaAGIError if guidanceScale parameter is not between 0 and 15
   it("should reject with NelaAGIError when strength parameter is not between 0.0 and 1.0", async () => {
     // Arrange
-    const image = createBlobFromFilePath("./tests/assets/image-to-image.png");
-    const maskImage = createBlobFromFilePath(
+    const image = readLocalFileAsBlob("./tests/assets/image-to-image.png");
+    const maskImage = readLocalFileAsBlob(
       "./tests/assets/image-inpainting-mask.jpg"
     );
     const prompt = "Generate a beautiful landscape image";
@@ -672,8 +769,8 @@ describe("ImageInpainting", () => {
   // Reject with NelaAGIError if guidanceScale parameter is not between 0 and 15
   it("should reject with NelaAGIError when guidanceScale parameter is not between 0 and 15", async () => {
     // Arrange
-    const image = createBlobFromFilePath("./tests/assets/image-to-image.png");
-    const maskImage = createBlobFromFilePath(
+    const image = readLocalFileAsBlob("./tests/assets/image-to-image.png");
+    const maskImage = readLocalFileAsBlob(
       "./tests/assets/image-inpainting-mask.jpg"
     );
     const prompt = "Generate a beautiful landscape image";
@@ -723,8 +820,8 @@ describe("ImageInpainting", () => {
   // Reject with NelaAGIError if imageFormat parameter is not PNG or JPEG
   it("should reject with NelaAGIError when imageFormat parameter is not PNG or JPEG", async () => {
     // Arrange
-    const image = createBlobFromFilePath("./tests/assets/image-to-image.png");
-    const maskImage = createBlobFromFilePath(
+    const image = readLocalFileAsBlob("./tests/assets/image-to-image.png");
+    const maskImage = readLocalFileAsBlob(
       "./tests/assets/image-inpainting-mask.jpg"
     );
     const prompt = "Generate a beautiful landscape image";
